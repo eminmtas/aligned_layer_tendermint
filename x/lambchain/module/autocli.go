@@ -28,6 +28,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					RpcMethod: "UpdateParams",
 					Skip:      true, // skipped because authority gated
 				},
+				{
+					RpcMethod:      "Verify",
+					Use:            "verify [proof]",
+					Short:          "Send a verify tx",
+					PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "proof"}},
+				},
 				// this line is used by ignite scaffolding # autocli/tx
 			},
 		},

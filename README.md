@@ -92,5 +92,4 @@ After encoding it with protobuf, the transaction is sent to the node (cometBFT).
 
 - In `deliverTx`, in addition to the procedure previously mentioned, the handler is called for every message with it's corresponding parameters, and the `PostHandler`'s are executed.
 
-The response is then encoded in the transaction result, and added to the
-blockchain.
+The response is then encoded in the transaction result, and added to the blockchain.

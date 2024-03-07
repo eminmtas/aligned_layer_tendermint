@@ -44,3 +44,53 @@ Transaction's information is sent to a specific Cosmos' Module, which in our cas
 <p align="center">
   <img src="imgs/Diagram_Cosmos.svg">
 </p>
+
+### Transaction Lifecycle
+
+A transaction can be created with ignite CLI, using the following command:
+
+```sh
+lambchaind tx lambchain verify --from alice --chain-id --generate-only lambchain "base64-encoded proof"
+```
+
+The transaction is structured as a JSON containing metadata and a set of **messages**. A message contains the fully-qualified name of the method that should handle it, and it's parameters.
+
+Custom modules define a message service (through a proto file) containing handlers which are then registered in the app builder. Each module also defines a `Keeper` which encapsulates module state, tipically through a `KvStore`.
+
+```json
+{
+    "body": {
+        "messages": [
+            {
+                "@type": "/lambchain.lambchain.MsgVerify",
+                "creator": "cosmos1524vzjchy064rr98d2de7u6uvl4qr3egfq67xn",
+                "proof": "base64-encoded proof"
+            }
+        ],
+        "memo": "",
+        "timeout_height": "0",
+        "extension_options": [],
+        "non_critical_extension_options": []
+    },
+    "auth_info": {
+        "signer_infos": [],
+        "fee": {
+            "amount": [],
+            "gas_limit": "200000",
+            "payer": "",
+            "granter": ""
+        },
+        "tip": null
+    },
+    "signatures": []
+}
+```
+
+After encoding it with protobuf, the transaction is sent to the node (cometBFT). The transaction is then relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
+
+- In `checkTx`, the default `BaseApp` implementation checks that a handler exists for every message and the `AnteHandler`'s are executed (by default verifying transaction authentication and gas fees).
+
+- In `deliverTx`, in addition to the procedure previously mentioned, the handler is called for every message with it's corresponding parameters, and the `PostHandler`'s are executed.
+
+The response is then encoded in the transaction result, and added to the
+blockchain.

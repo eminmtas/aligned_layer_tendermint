@@ -47,15 +47,14 @@ Transaction's information is sent to a specific Cosmos' Module, which in our cas
 
 ### Custom Modules
 
-Cosmos SDK provide an Application Module interface to facilitate the composition of modules to form a functional unified application.
+Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application.
 
-Each module can define services which are then registered in the main application. The recommended way of defining a message service is through a protobuf file.
+Each module can define services which are then registered in the main application. The recommended way of defining a message service is through a protobuf file. The message handlers should define the state transition after receiving a
+particular message.
 
 A module usually defines a Keeper which encapsulates the sub-state of each
 module. Tipically through a key-value store.
 
-Then message handlers should define the state transition after receiving a
-particular message.
 
 ### Transaction Lifecycle
 
@@ -103,3 +102,4 @@ After encoding it with protobuf, the transaction is sent to the node (cometBFT).
 - In `deliverTx`, in addition to the procedure previously mentioned, the handler is called for every message with it's corresponding parameters, and the `PostHandler`'s are executed.
 
 The response is then encoded in the transaction result, and added to the blockchain.
+

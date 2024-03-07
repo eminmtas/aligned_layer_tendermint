@@ -44,3 +44,65 @@ Transaction's information is sent to a specific Cosmos' Module, which in our cas
 <p align="center">
   <img src="imgs/Diagram_Cosmos.svg">
 </p>
+
+### Custom Modules
+
+Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application.
+
+Each module can define services which are then registered in the main application. The recommended way of defining a message service is through a protobuf file. The message handlers should define the state transition after receiving a
+particular message.
+
+A module usually defines a Keeper which encapsulates the sub-state of each
+module. Tipically through a key-value store.
+
+
+### Transaction Lifecycle
+
+A transaction can be created and sent (encoded with protobuf) with ignite CLI, using the following command:
+
+```sh
+lambchaind tx lambchain verify --from alice --chain-id lambchain "base64-encoded proof"
+```
+
+A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified name of the method that should handle it, and it's parameters.
+
+```json
+{
+    "body": {
+        "messages": [
+            {
+                "@type": "/lambchain.lambchain.MsgVerify",
+                "creator": "cosmos1524vzjchy064rr98d2de7u6uvl4qr3egfq67xn",
+                "proof": "base64-encoded proof"
+            }
+        ],
+        "memo": "",
+        "timeout_height": "0",
+        "extension_options": [],
+        "non_critical_extension_options": []
+    },
+    "auth_info": {
+        "signer_infos": [],
+        "fee": {
+            "amount": [],
+            "gas_limit": "200000",
+            "payer": "",
+            "granter": ""
+        },
+        "tip": null
+    },
+    "signatures": []
+}
+```
+
+After Comet BFT receives the transaction, it's relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
+
+- `checkTx`: The default `BaseApp` implementation does the following.
+    - Checks that a handler exists for every message based on it's type.
+    - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
+- `deliverTx`: In addition to the procedure previously mentioned.
+    - The corresponding handler is called for every message.
+    - The `PostHandler`'s are executed.
+
+The response is then encoded in the transaction result, and added to the blockchain.
+

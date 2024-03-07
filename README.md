@@ -58,13 +58,13 @@ module. Tipically through a key-value store.
 
 ### Transaction Lifecycle
 
-A transaction can be created with ignite CLI, using the following command:
+A transaction can be created and sent (encoded with protobuf) with ignite CLI, using the following command:
 
 ```sh
-lambchaind tx lambchain verify --from alice --chain-id --generate-only lambchain "base64-encoded proof"
+lambchaind tx lambchain verify --from alice --chain-id lambchain "base64-encoded proof"
 ```
 
-The transaction is structured as a JSON containing metadata and a set of **messages**. A message contains the fully-qualified name of the method that should handle it, and it's parameters.
+A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified name of the method that should handle it, and it's parameters.
 
 ```json
 {
@@ -95,11 +95,14 @@ The transaction is structured as a JSON containing metadata and a set of **messa
 }
 ```
 
-After encoding it with protobuf, the transaction is sent to the node (cometBFT). The transaction is then relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
+After Comet BFT receives the transaction, it's relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
 
-- In `checkTx`, the default `BaseApp` implementation checks that a handler exists for every message and the `AnteHandler`'s are executed (by default verifying transaction authentication and gas fees).
-
-- In `deliverTx`, in addition to the procedure previously mentioned, the handler is called for every message with it's corresponding parameters, and the `PostHandler`'s are executed.
+- `checkTx`: The default `BaseApp` implementation does the following.
+    - Checks that a handler exists for every message based on it's type.
+    - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
+- `deliverTx`: In addition to the procedure previously mentioned.
+    - The corresponding handler is called for every message.
+    - The `PostHandler`'s are executed.
 
 The response is then encoded in the transaction result, and added to the blockchain.
 

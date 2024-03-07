@@ -35,3 +35,14 @@ lambchaind query tx <txhash>
 
 The blockchain in development can be configured with `config.yml`.
 
+## Setting up multiple nodes using docker
+
+Build docker image:
+```sh
+docker build -f Dockerfile . -t lambchaind_i
+```
+
+Run script:
+```sh
+bash multi_node_setup.sh
+```

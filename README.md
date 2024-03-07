@@ -37,7 +37,7 @@ The blockchain in development can be configured with `config.yml`.
 
 # How It Works
 
-A blockchain can be created using the igniteCLI, which collects various files from CosmosSDK, making it easier to deploy a blockchain to production. CosmosSDK manages communication between the Application Layer and the Consensus Layer via the ABCI. The Consensus Layer, in turn, is responsible for CometBFT, which uses Tendermint as the consensus client.
+A blockchain can be created using the ignite CLI, which generates boilerplate for a Cosmos SDK application, making it easier to deploy a blockchain to production. Cosmos SDK is built on top of the consensus layer, implementing the ABCI (Application BlockChain Interface). By default, CometBFT (a fork of Tendermint) is used as the consensus layer.
 
 In the Application Layer, messages are defined to be included in transactions. The application then forwards the message's information to a Module, which is essentially a Go function triggered when the message is included in a transaction.
 

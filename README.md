@@ -45,6 +45,18 @@ Transaction's information is sent to a specific Cosmos' Module, which in our cas
   <img src="imgs/Diagram_Cosmos.svg">
 </p>
 
+### Custom Modules
+
+Cosmos SDK provide an Application Module interface to facilitate the composition of modules to form a functional unified application.
+
+Each module can define services which are then registered in the main application. The recommended way of defining a message service is through a protobuf file.
+
+A module usually defines a Keeper which encapsulates the sub-state of each
+module. Tipically through a key-value store.
+
+Then message handlers should define the state transition after receiving a
+particular message.
+
 ### Transaction Lifecycle
 
 A transaction can be created with ignite CLI, using the following command:
@@ -54,8 +66,6 @@ lambchaind tx lambchain verify --from alice --chain-id --generate-only lambchain
 ```
 
 The transaction is structured as a JSON containing metadata and a set of **messages**. A message contains the fully-qualified name of the method that should handle it, and it's parameters.
-
-Custom modules define a message service (through a proto file) containing handlers which are then registered in the app builder. Each module also defines a `Keeper` which encapsulates module state, tipically through a `KvStore`.
 
 ```json
 {

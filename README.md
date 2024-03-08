@@ -39,10 +39,20 @@ The blockchain in development can be configured with `config.yml`.
 
 Build docker image:
 ```sh
-docker build -f Dockerfile . -t lambchaind_i
+docker build . -t lambchaind_i
 ```
 
 Run script:
 ```sh
-bash multi_node_setup.sh
+bash multi_node_setup.sh <node1_name> [<node2_name> ...]
+```
+
+Start nodes:
+```sh
+docker compose --project-name lambchain-net up --detach
+```
+
+You can verify that it works by running (replacing `<node1_name>` by the name chosen in the bash script):
+```sh
+docker run --rm -it --network lambchain-net lambchaind_i status --node "tcp://<node1_name>:26657"
 ```

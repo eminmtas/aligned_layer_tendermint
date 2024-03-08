@@ -120,7 +120,7 @@ After Comet BFT receives the transaction, it's relayed to the application throug
     - Checks that a handler exists for every message based on its type.
     - A `ValidateBasic` method (optionally implemented for each message type) is executed for every message, allowing stateless validation. This step is deprecated and should be avoided.
     - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
-- `deliverTx`: In addition to the `checkTx` steps, previously mentioned, the following is executed to.
+- `deliverTx`: In addition to the `checkTx` steps previously mentioned, the following is executed to.
     - The corresponding handler is called for every message.
     - The `PostHandler`'s are executed.
 

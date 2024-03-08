@@ -21,7 +21,7 @@ ignite chain serve
 
 This command installs dependencies, builds, initializes, and starts your blockchain in development.
 
-To send verify message (transaction), run:
+To send a verify message (transaction), run:
 
 ```sh
 lambchaind tx lambchain verify --from alice --chain-id lambchain <proof>

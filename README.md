@@ -27,6 +27,13 @@ To send verify message (transaction), run:
 lambchaind tx lambchain verify --from alice --chain-id lambchain <proof>
 ```
 
+This will output the transaction result (usually containing default values as it doesn't wait for the blockchain to execute it), and the transaction hash.
+
+```txt
+...
+txhash: F105EAD99F96289914EF16CB164CE43A330AEDB93CAE2A1CFA5FAE013B5CC515
+```
+
 To get the transaction result, run:
 
 ```sh
@@ -41,7 +48,7 @@ The core of the state machine is defined in [app.go](https://github.com/lambdacl
 
 Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/lambchain/blob/main/x/) directory.
 
-A module can define message services for handling transactions. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), whish is then registered in the main application.
+A module can define message services for handling transactions. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), which is registered in the main application.
 
 A module usually defines a [keeper](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
 

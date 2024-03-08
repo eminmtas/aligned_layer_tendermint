@@ -117,7 +117,7 @@ A JSON representation of the transaction can be obtained with the `--generate-on
 After Comet BFT receives the transaction, it's relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
 
 - `checkTx`: The default `BaseApp` implementation does the following.
-    - Checks that a handler exists for every message based on it's type.
+    - Checks that a handler exists for every message based on its type.
     - The `ValidateBasic` methods is executed for every message, allowing stateless validation.
     - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
 - `deliverTx`: In addition to the procedure previously mentioned.

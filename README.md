@@ -50,7 +50,7 @@ Cosmos SDK provides an Application Module interface to facilitate the compositio
 
 A module defines a message service for handling messages. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), which is registered in the main application.
 
-Each message is identified by its fully-qualified name. For example, the _verify_ message has the type `/lambchain.lambchain.MsgVerify`.
+Each message's type is identified by its fully-qualified name. For example, the _verify_ message has the type `/lambchain.lambchain.MsgVerify`.
 
 A module usually defines a [keeper](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
 

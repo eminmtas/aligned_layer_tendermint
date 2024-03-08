@@ -22,9 +22,9 @@ node_ids=()
 for node in "$@"; do
     echo "Initializing $node..."
     docker run -v $(pwd)/prod-sim/$node:/root/.lambchain -it lambchaind_i init lambchain --chain-id lambchain > /dev/null
-
-    docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.lambchain --entrypoint sed lambchaind_i -i 's/"stake"/"'$token'"/g' /root/.lambchain/config/genesis.json
-    docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.lambchain --entrypoint sed lambchaind_i -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.1'$token'"/' /root/.lambchain/config/app.toml
+    
+    docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.lambchain --entrypoint sed lambchaind_i -i 's/"stake"/"'$token'"/g' /root/.lambchain/config/genesis.json 
+    docker run -v $(pwd)/prod-sim/$node:/root/.lambchain -it lambchaind_i config set app minimum-gas-prices "0.1$token"
 
     node_id=$(docker run --rm -i -v $(pwd)/prod-sim/$node:/root/.lambchain lambchaind_i tendermint show-node-id)
     node_ids+=($node_id)
@@ -67,8 +67,10 @@ for (( i=1; i <= "$#"; i++ )); do
         fi
     done
     other_addresses=$(IFS=,; echo "${other_addresses[*]}")
-    sed -i .back 's/seeds = ""/seeds = "'$other_addresses'"/' prod-sim/${!i}/config/config.toml
+    docker run -v $(pwd)/prod-sim/${!i}:/root/.lambchain -it lambchaind_i config set config p2p.seeds "$other_addresses" --skip-validate
 done
+
+docker run -v $(pwd)/prod-sim/$1:/root/.lambchain -it lambchaind_i config set config rpc.laddr "tcp://0.0.0.0:26657" --skip-validate
 
 echo "Setting up docker compose..."
 rm -f prod-sim/docker-compose.yml

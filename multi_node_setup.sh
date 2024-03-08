@@ -24,6 +24,7 @@ for node in "$@"; do
     docker run -v $(pwd)/prod-sim/$node:/root/.lambchain -it lambchaind_i init lambchain --chain-id lambchain > /dev/null
 
     docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.lambchain --entrypoint sed lambchaind_i -i 's/"stake"/"'$token'"/g' /root/.lambchain/config/genesis.json
+    docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.lambchain --entrypoint sed lambchaind_i -i 's/minimum-gas-prices = ""/minimum-gas-prices = "0.1'$token'"/' /root/.lambchain/config/app.toml
 
     node_id=$(docker run --rm -i -v $(pwd)/prod-sim/$node:/root/.lambchain lambchaind_i tendermint show-node-id)
     node_ids+=($node_id)
@@ -66,5 +67,16 @@ for (( i=1; i <= "$#"; i++ )); do
         fi
     done
     other_addresses=$(IFS=,; echo "${other_addresses[*]}")
-    sed -i .back 's/persistent_peers = ""/persistent_peers = "'$other_addresses'"/' prod-sim/${!i}/config/config.toml
+    sed -i .back 's/seeds = ""/seeds = "'$other_addresses'"/' prod-sim/${!i}/config/config.toml
+done
+
+echo "Setting up docker compose..."
+rm -f prod-sim/docker-compose.yml
+printf "version: '3.7'\nnetworks:\n  net-public:\nservices:\n" > docker-compose.yml
+for node in "$@"; do
+    printf "  lambchaind-$node:\n    command: start\n    image: lambchaind_i\n    container_name: $node\n    volumes:\n      - ./prod-sim/$node:/root/.lambchain\n    networks:\n      - net-public\n" >> ./docker-compose.yml
+    if [ $node == "$1" ]; then
+        printf "    ports:\n      - 0.0.0.0:26657:26657\n" >> ./docker-compose.yml
+    fi
+    printf "\n" >> ./docker-compose.yml
 done

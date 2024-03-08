@@ -44,7 +44,7 @@ lambchaind query tx <txhash>
 
 ### Project Anatomy
 
-The core of the state machine `App` is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes messages the the appropiate module for handling. A transaction contains any number of messages.
+The core of the state machine `App` is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes messages to the appropriate module for handling. A transaction contains any number of messages.
 
 Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/lambchain/blob/main/x/) directory.
 

@@ -118,7 +118,7 @@ After Comet BFT receives the transaction, it's relayed to the application throug
 
 - `checkTx`: The default `BaseApp` implementation does the following.
     - Checks that a handler exists for every message based on its type.
-    - The `ValidateBasic` methods is executed for every message, allowing stateless validation.
+    - A `ValidateBasic` method (optionally implemented for each message type) is executed for every message, allowing stateless validation. This step is deprecated and should be avoided.
     - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
 - `deliverTx`: In addition to the procedure previously mentioned.
     - The corresponding handler is called for every message.

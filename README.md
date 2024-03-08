@@ -114,7 +114,7 @@ A JSON representation of the transaction can be obtained with the `--generate-on
 }
 ```
 
-After Comet BFT receives the transaction, it's relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
+After Comet BFT receives the transaction, its relayed to the application through the ABCI methods `checkTx` and `deliverTx`.
 
 - `checkTx`: The default `BaseApp` implementation does the following.
     - Checks that a handler exists for every message based on its type.

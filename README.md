@@ -44,11 +44,13 @@ lambchaind query tx <txhash>
 
 ### Project Anatomy
 
-The core of the state machine is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes transactions the the appropiate custom module for handling.
+The core of the state machine `App` is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes messages the the appropiate module for handling. A transaction contains any number of messages.
 
 Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/lambchain/blob/main/x/) directory.
 
-A module can define message services for handling transactions. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), which is registered in the main application.
+A module defines a message service for handling messages. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), which is registered in the main application.
+
+Each message is identified by it's fully-qualified name. For example, the _verify_ message has the type `/lambchain.lambchain.MsgVerify`.
 
 A module usually defines a [keeper](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
 
@@ -70,16 +72,18 @@ ignite scaffold message --module <module-name> <message-name> \
     --response <response-fields...>
 ```
 
+See the [Ignite CLI reference](https://docs.ignite.com/references/cli) to learn
+about other scaffolding commands.
 
 ### Transaction Lifecycle
 
-A transaction can be created and sent (encoded with protobuf) with ignite CLI, using the following command:
+A transaction can be created and sent with protobuf with ignite CLI, using the following command:
 
 ```sh
 lambchaind tx lambchain verify --from alice --chain-id lambchain "base64-encoded proof"
 ```
 
-A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified name of the method that should handle it, and it's parameters.
+A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified type to route it correctly, and it's parameters.
 
 ```json
 {
@@ -114,6 +118,7 @@ After Comet BFT receives the transaction, it's relayed to the application throug
 
 - `checkTx`: The default `BaseApp` implementation does the following.
     - Checks that a handler exists for every message based on it's type.
+    - The `ValidateBasic` methods is executed for every message, allowing stateless validation.
     - The `AnteHandler`'s are executed, by default verifying transaction authentication and gas fees.
 - `deliverTx`: In addition to the procedure previously mentioned.
     - The corresponding handler is called for every message.

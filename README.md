@@ -4,7 +4,7 @@ An application-specific blockchain built using [Cosmos SDK](https://docs.cosmos.
 
 Cosmos SDK provides a framework to build an application layer on top of a consensus layer interacting via ABCI (Application BlockChain Interface). By default, [CometBFT](https://cometbft.com/) (a fork of Tendermint) is used in the consensus and network layer.
 
-Ignite CLI is used to generates boilerplate code for a Cosmos SDK application, making it easier to deploy a blockchain to production.
+Ignite CLI is used to generate boilerplate code for a Cosmos SDK application, making it easier to deploy a blockchain to production.
 
 ## Requirements
 

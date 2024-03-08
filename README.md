@@ -140,10 +140,10 @@ bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 
 Start nodes:
 ```sh
-docker compose --project-name lambchain-net up --detach
+docker-compose --project-name lambchain up --detach
 ```
 
 You can verify that it works by running (replacing `<node1_name>` by the name chosen in the bash script):
 ```sh
-docker run --rm -it --network lambchain-net lambchaind_i status --node "tcp://<node1_name>:26657"
+docker run --rm -it --network lambchain_net-public lambchaind_i status --node "tcp://<node1_name>:26657"
 ```

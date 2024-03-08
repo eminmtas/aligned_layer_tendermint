@@ -83,7 +83,7 @@ A transaction can be created and sent with protobuf with ignite CLI, using the f
 lambchaind tx lambchain verify --from alice --chain-id lambchain "base64-encoded proof"
 ```
 
-A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified type to route it correctly, and it's parameters.
+A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified type to route it correctly, and its parameters.
 
 ```json
 {

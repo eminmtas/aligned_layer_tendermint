@@ -1,15 +1,17 @@
-# Bootcamp Verifying Lambchain
+# Bootcamp Verifying Lambchain (WIP)
 
-This repository contains a WIP zkSNARK verifier blockchain using Cosmos SDK and CometBFT and created with Ignite CLI.
+An application-specific blockchain built using [Cosmos SDK](https://docs.cosmos.network/) and created with [Ignite CLI](https://ignite.com/). The blockchain offers a variety of zkSNARK implementations to verify proofs sent over transactions, and stores their results.
 
-The application interacts with zkSNARK verifiers built in Rust through FFI.
+Cosmos SDK provides a framework to build an application layer on top of a consensus layer interacting via ABCI (Application BlockChain Interface). By default, [CometBFT](https://cometbft.com/) (a fork of Tendermint) is used in the consensus and network layer.
+
+Ignite CLI is used to generates boilerplate code for a Cosmos SDK application, making it easier to deploy a blockchain to production.
 
 ## Requirements
 
 - Go
 - Ignite
 
-## Single Node Usage
+## Example Application Usage 
 
 To run a single node blockchain, run:
 
@@ -31,29 +33,35 @@ To get the transaction result, run:
 lambchaind query tx <txhash>
 ```
 
-## Configure
-
-The blockchain in development can be configured with `config.yml`.
-
 ## How It Works
 
-A blockchain can be created using the ignite CLI, which generates boilerplate for a Cosmos SDK application, making it easier to deploy a blockchain to production. Cosmos SDK is built on top of the consensus layer, implementing the ABCI (Application BlockChain Interface). By default, CometBFT (a fork of Tendermint) is used as the consensus layer.
+### Project Anatomy
 
-Transaction's information is sent to a specific Cosmos' Module, which in our case is a zk-SNARK verifier.
+The core of the state machine is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes transactions the the appropiate custom module for handling.
+
+Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/lambchain/blob/main/x/) directory.
+
+A module can define message services for handling transactions. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), whish is then registered in the main application.
+
+A module usually defines a [keeper](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
 
 <p align="center">
   <img src="imgs/Diagram_Cosmos.svg">
 </p>
 
-### Custom Modules
+The boilerplate for creating custom modules and messages can be generated using Ignite CLI. To generate a new module, run:
 
-Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application.
+```sh
+ignite scaffold module <module-name>
+```
 
-Each module can define services which are then registered in the main application. The recommended way of defining a message service is through a protobuf file. The message handlers should define the state transition after receiving a
-particular message.
+To generate a message handler for the module, run:
 
-A module usually defines a Keeper which encapsulates the sub-state of each
-module. Tipically through a key-value store.
+```sh
+ignite scaffold message --module <module-name> <message-name> \
+    <parameters...> \
+    --response <response-fields...>
+```
 
 
 ### Transaction Lifecycle

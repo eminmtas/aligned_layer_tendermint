@@ -126,14 +126,24 @@ After Comet BFT receives the transaction, its relayed to the application through
 
 The response is then encoded in the transaction result, and added to the blockchain.
 
-## Setting Up Multiple Nodes Using Docker
+## Setting up multiple local nodes using docker
+
+Sets up a network of docker containers each with a validator node.
 
 Build docker image:
 ```sh
 docker build . -t lambchaind_i
 ```
 
-Run script (replacing node names):
+After building the image we need to set up the files for each cosmos validator node.
+The steps are:
+- Creating and initializing each node working directory with cosmos files.
+- Add users for each node with sufficient funds.
+- Create and distribute inital genesis file.
+- Set up addresses between nodes.
+- Build docker compose file.
+
+Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`)
 ```sh
 bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 ```
@@ -142,8 +152,9 @@ Start nodes:
 ```sh
 docker-compose --project-name lambchain up --detach
 ```
+This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
 
-You can verify that it works by running (replacing `<node1_name>` by the name chosen in the bash script):
+You can verify that it works by running (replacing `<node1_name>` by the name of the first node chosen in the bash script):
 ```sh
 docker run --rm -it --network lambchain_net-public lambchaind_i status --node "tcp://<node1_name>:26657"
 ```

@@ -138,6 +138,8 @@ To get a list with all services, run:
 grpcurl -plaintext localhost:9090 list
 ```
 
+The requests can be made programatically with any programming language containing the protobuf definitions.
+
 #### REST
 
 The node exposes REST endpoints via gRPC-gateway on port 1317. A swagger UI can be accesed at `localhost:1317`.

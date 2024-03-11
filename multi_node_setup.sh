@@ -32,18 +32,42 @@ for node in "$@"; do
     echo "Node ID for $node: $node_id"
 done
 
-echo "Creating key for alice in $1..."
-printf "$password\n$password\n" | docker run --rm -i -v $(pwd)/prod-sim/$1:/root/.lambchain lambchaind_i keys --keyring-backend file --keyring-dir /root/.lambchain/keys add alice > /dev/null
 
-alice_address=$(echo $password | docker run --rm -i -v $(pwd)/prod-sim/$1:/root/.lambchain lambchaind_i keys --keyring-backend file --keyring-dir /root/.lambchain/keys show alice --address)
+for (( i=1; i <= "$#"; i++ )); do
+    echo "Creating key for ${!i} user..."
+    printf "$password\n$password\n" | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.lambchain lambchaind_i keys --keyring-backend file --keyring-dir /root/.lambchain/keys add val_${!i} > /dev/null
 
-echo "Alice's address: $alice_address"
+    val_address=$(echo $password | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.lambchain lambchaind_i keys --keyring-backend file --keyring-dir /root/.lambchain/keys show val_${!i} --address)
+    echo "val_${!i} address: $val_address"
 
-echo "Giving alice some tokens..."
-docker run --rm -it -v $(pwd)/prod-sim/$1:/root/.lambchain lambchaind_i genesis add-genesis-account $alice_address $initial_balance$token
+    echo "Giving val_${!i} some tokens..."
+    docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.lambchain lambchaind_i genesis add-genesis-account $val_address $initial_balance$token
 
-echo "Giving alice some stake..."
-echo $password | docker run --rm -i -v $(pwd)/prod-sim/$1:/root/.lambchain lambchaind_i genesis gentx alice $initial_stake$token --keyring-backend file --keyring-dir /root/.lambchain/keys --account-number 0 --sequence 0 --chain-id lambchain --gas 1000000 --gas-prices 0.1$token
+    if [ $((i+1)) -le "$#" ]; then
+        j=$((i+1))
+        cp prod-sim/${!i}/config/genesis.json prod-sim/${!j}/config/genesis.json
+    else
+        cp prod-sim/${!i}/config/genesis.json prod-sim/$1/config/genesis.json
+    fi      
+done
+
+
+
+for (( i=1; i <= "$#"; i++ )); do
+    echo "Giving val_${!i} some stake..."
+    echo $password | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.lambchain lambchaind_i genesis gentx val_${!i} $initial_stake$token --keyring-backend file --keyring-dir /root/.lambchain/keys --account-number 0 --sequence 0 --chain-id lambchain --gas 1000000 --gas-prices 0.1$token
+
+    if [ $i -gt 1 ]; then
+        cp prod-sim/${!i}/config/gentx/* prod-sim/$1/config/gentx/
+    fi
+
+    if [ $((i+1)) -le "$#" ]; then
+        j=$((i+1))
+        cp prod-sim/${!i}/config/genesis.json prod-sim/${!j}/config/genesis.json
+    else
+        cp prod-sim/${!i}/config/genesis.json prod-sim/$1/config/genesis.json
+    fi   
+done
 
 echo "Collecting genesis transactions..."
 docker run --rm -it -v $(pwd)/prod-sim/$1:/root/.lambchain lambchaind_i genesis collect-gentxs > /dev/null

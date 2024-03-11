@@ -126,7 +126,9 @@ After Comet BFT receives the transaction, its relayed to the application through
 
 The response is then encoded in the transaction result, and added to the blockchain.
 
-### Sending Formats
+### Interacting with a Node
+
+The full-node exposes three different types of endpoints for interacting with it.
 
 #### gRPC
 

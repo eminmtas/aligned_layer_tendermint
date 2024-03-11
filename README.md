@@ -150,7 +150,7 @@ bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 
 Start nodes:
 ```sh
-docker-compose --project-name lambchain up --detach
+docker-compose --project-name lambchain -f ./prod-sim/docker-compose.yml up --detach
 ```
 This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
 

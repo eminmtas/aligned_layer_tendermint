@@ -126,3 +126,48 @@ After Comet BFT receives the transaction, its relayed to the application through
 
 The response is then encoded in the transaction result, and added to the blockchain.
 
+### Interacting with a Node
+
+The full-node exposes three different types of endpoints for interacting with it.
+
+#### gRPC
+
+The node exposes a gRPC server on port 9090.
+
+To get a list with all services, run:
+
+```sh
+grpcurl -plaintext localhost:9090 list
+```
+
+The requests can be made programatically with any programming language containing the protobuf definitions.
+
+#### REST
+
+The node exposes REST endpoints via gRPC-gateway on port 1317. An OpenAPI specification can be found [here](https://docs.cosmos.network/api)
+
+To get the status of the server, run:
+
+```sh
+curl "http://localhost:1317/cosmos/base/node/v1beta1/status" 
+```
+
+#### CometBFT RPC
+
+The CometBFT layer exposes a RPC server on port 26657. An OpenAPI specification can be found in [here](https://docs.cometbft.com/v0.38/rpc/).
+
+When sending the transaction, it must be sent serialized with protobuf and encoded in base64, like the following example:
+
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "broadcast_tx_sync",
+    "params": {
+        "tx": "CloKWAoeL2xhbWJjaGFpbi5sYW1iY2hhaW4uTXNnVmVyaWZ5EjYKLWNvc21vczE1MjR2empjaHkwNjRycjk4ZDJkZTd1NnV2bDRxcjNlZ2ZxNjd4bhIFcHJvb2YSWApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAn0JsZxYl0K5OPEcDNS6nTDsERXapNMidfDtTtrsjtGwEgQKAggBGA0SBBDAmgwaQIzdKrUQB9oMGpFTbPJgLMbcGDvteJ+KIShE7FlUxcipS9i8FslYSqPoZ0RUg9LAGl4/PMD8s/ooEpzO4N7XqLs="
+    }
+}
+```
+
+This is the format used by the CLI.

@@ -142,7 +142,7 @@ The requests can be made programatically with any programming language containin
 
 #### REST
 
-The node exposes REST endpoints via gRPC-gateway on port 1317. A swagger UI can be accesed at `localhost:1317`.
+The node exposes REST endpoints via gRPC-gateway on port 1317. An OpenAPI specification can be found [here](https://docs.cosmos.network/api)
 
 To get the status of the server, run:
 

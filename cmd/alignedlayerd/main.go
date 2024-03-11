@@ -6,8 +6,8 @@ import (
 
 	svrcmd "github.com/cosmos/cosmos-sdk/server/cmd"
 
-	"lambchain/app"
-	"lambchain/cmd/lambchaind/cmd"
+	"alignedlayer/app"
+	"alignedlayer/cmd/alignedlayerd/cmd"
 )
 
 func main() {

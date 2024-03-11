@@ -1,4 +1,4 @@
-# Bootcamp Verifying Lambchain (WIP)
+# Aligned Layer Blokchain
 
 An application-specific blockchain built using [Cosmos SDK](https://docs.cosmos.network/) and created with [Ignite CLI](https://ignite.com/). The blockchain offers a variety of zkSNARK implementations to verify proofs sent over transactions, and stores their results.
 

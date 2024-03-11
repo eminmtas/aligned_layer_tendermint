@@ -24,10 +24,10 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 
-	"lambchain/app"
+	"alignedlayer/app"
 )
 
-// NewRootCmd creates a new root command for lambchaind. It is called once in the main function.
+// NewRootCmd creates a new root command for alignedlayerd. It is called once in the main function.
 func NewRootCmd() *cobra.Command {
 	initSDKConfig()
 
@@ -58,7 +58,7 @@ func NewRootCmd() *cobra.Command {
 
 	rootCmd := &cobra.Command{
 		Use:           app.Name + "d",
-		Short:         "Start lambchain node",
+		Short:         "Start alignedlayer node",
 		SilenceErrors: true,
 		PersistentPreRunE: func(cmd *cobra.Command, _ []string) error {
 			// set the default command outputs

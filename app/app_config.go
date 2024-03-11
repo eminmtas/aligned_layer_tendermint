@@ -20,10 +20,6 @@ import (
 	genutiltypes "github.com/cosmos/cosmos-sdk/x/genutil/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-
-	lambchainmodulev1 "lambchain/api/lambchain/lambchain/module"
-	_ "lambchain/x/lambchain/module" // import for side-effects
-	lambchainmoduletypes "lambchain/x/lambchain/types"
 	// this line is used by starport scaffolding # stargate/app/moduleImport
 )
 
@@ -43,7 +39,6 @@ var (
 		stakingtypes.ModuleName,
 		genutiltypes.ModuleName,
 		// chain modules
-		lambchainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
 	}
 
@@ -56,7 +51,6 @@ var (
 		distrtypes.ModuleName,
 		stakingtypes.ModuleName,
 		// chain modules
-		lambchainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/beginBlockers
 	}
 
@@ -64,7 +58,6 @@ var (
 		// cosmos sdk modules
 		stakingtypes.ModuleName,
 		// chain modules
-		lambchainmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/endBlockers
 	}
 
@@ -155,10 +148,6 @@ var (
 			{
 				Name:   genutiltypes.ModuleName,
 				Config: appconfig.WrapAny(&genutilmodulev1.Module{}),
-			},
-			{
-				Name:   lambchainmoduletypes.ModuleName,
-				Config: appconfig.WrapAny(&lambchainmodulev1.Module{}),
 			},
 			// this line is used by starport scaffolding # stargate/app/moduleConfig
 		},

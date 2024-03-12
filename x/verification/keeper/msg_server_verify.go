@@ -4,20 +4,28 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"fmt"
+	"io"
 	"strconv"
 
 	"alignedlayer/x/verification/types"
 
 	"github.com/consensys/gnark-crypto/ecc"
+	"github.com/consensys/gnark-crypto/kzg"
 	"github.com/consensys/gnark/backend/plonk"
 	"github.com/consensys/gnark/backend/witness"
+	"github.com/consensys/gnark/constraint"
+	cs "github.com/consensys/gnark/constraint/bn254"
+	"github.com/consensys/gnark/frontend"
+	"github.com/consensys/gnark/frontend/cs/scs"
+	"github.com/consensys/gnark/test"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) Verify(goCtx context.Context, msg *types.MsgVerify) (*types.MsgVerifyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	result := verify(msg.Proof, msg.PublicInputs)
+	result := verify(msg)
 	event := sdk.NewEvent("verification_finished",
 		sdk.NewAttribute("proof_verifies", strconv.FormatBool(result)))
 
@@ -26,37 +34,83 @@ func (k msgServer) Verify(goCtx context.Context, msg *types.MsgVerify) (*types.M
 	return &types.MsgVerifyResponse{}, nil
 }
 
-func verify(proof string, pw string) bool {
-	// Deserialize Proof
-	proof_des := plonk.NewProof(ecc.BN254)
-	proof_base64 := []byte(proof)
-	proof_bytes := make([]byte, base64.StdEncoding.DecodedLen(len(proof_base64)))
-	_, err := base64.StdEncoding.Decode(proof_bytes, proof_base64)
-	if err != nil {
-		return false
+type Circuit struct {
+	X frontend.Variable `gnark:"x"`       // x  --> secret visibility (default)
+	Y frontend.Variable `gnark:",public"` // Y  --> public visibility
+}
+
+// Define declares the circuit logic. The compiler then produces a list of constraints
+// which must be satisfied (valid witness) in order to create a valid zk-SNARK
+func (circuit *Circuit) Define(api frontend.API) error {
+	// compute x**3 and store it in the local variable x3.
+	x3 := api.Mul(circuit.X, circuit.X, circuit.X)
+
+	// compute x**3 + x + 5 and store it in the local variable res
+	res := api.Add(x3, circuit.X, 5)
+
+	// assert that the statement x**3 + x + 5 == y is true.
+	api.AssertIsEqual(circuit.Y, res)
+	return nil
+}
+
+// Defines the proof that will be proved.
+func toProve() Circuit {
+	return Circuit{
+		X: 3,
+		Y: 35,
 	}
-	proof_reader := bytes.NewReader(proof_bytes)
-	proof_des.ReadFrom(proof_reader)
+}
 
-	// Deserialize VK
-	vk_base64 := []byte("AAAAAAAAEAAwYUgt+gOND7W0wLImGUBHomFlCfUx1Po6zbd0lsEAAQkx1ZbeL9EPAd3Qc/1akKl28WnHbwObuRxHdXIAQtQ6AAAAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABdy0mQ14gV1EStfBPtsFFkmaiOGAOwcSwaFd+Di7k/ge4BkEEQGkzMkdmSU8debcrr5rnmuDk1vIPnuzsVkyEdrEfzxjAU6hwqhcxpSgTJF79SWIvgjeSCObDMic4ucD++sh1cF1ULuZjYmFwDKqt0+rGyTKhdOdpE5e9Bx0PPCE2s8bGKvkU4piZ7MHZ3RQ3e3UwelnapAX2Ge7iDPFcRuMjm84yvut2F6lpCdbT66ntUv2/kAthcnk+qiNSn48ndOeqCVr8CnLg0PhgZOKnu7IXiy/lTylD1WwQz/U+lhzr9I8cahl6BNzAwzthw17RvdXc/IqgxjYLqsLJ9mhf68AAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGZjpOTkg1IOnJgv7cx+10l8apJMzWp5xKX5IW3rvMSwhgA3u8SHx52QmoAZl5cRHlnQyLU917a3UbevVzZkvbtgjDx4kyAPcVBYE85V+nvc9OSStU9OT1YIAG+poYKjSIJWlw4dDYZlOEYwQYY+QxDnjlJNkiO2zGP9mRt+yRUVwAAAAA=")
-	vk_des := plonk.NewVerifyingKey(ecc.BN254)
-	vk_bytes := make([]byte, base64.StdEncoding.DecodedLen(len(vk_base64)))
-	base64.StdEncoding.Decode(vk_bytes, vk_base64)
-	vk_reader := bytes.NewReader(vk_bytes)
-	vk_des.ReadFrom(vk_reader)
+func get_proof() (plonk.Proof, plonk.VerifyingKey, constraint.ConstraintSystem, kzg.SRS) {
+	var myCircuit Circuit
+	ccs, _ := frontend.Compile(ecc.BN254.ScalarField(), scs.NewBuilder, &myCircuit)
 
-	// Deserialize PublicWitness
-	pw_des, err := witness.New(ecc.BN254.ScalarField())
+	scs := ccs.(*cs.SparseR1CS)
+	kzgsrs, _ := test.NewKZGSRS(scs)
+
+	fmt.Println(scs.Coefficients)
+
+	assignment := toProve()
+
+	fullWitness, _ := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
+
+	pk, vk, _ := plonk.Setup(ccs, kzgsrs)
+
+	var vk_buffer bytes.Buffer
+	vk.WriteTo(&vk_buffer)
+
+	proof, _ := plonk.Prove(ccs, pk, fullWitness)
+
+	return proof, vk, ccs, kzgsrs
+}
+
+func verify(msg *types.MsgVerify) bool {
+	proof := plonk.NewProof(ecc.BN254)
+	deserialize(proof, msg.Proof)
+
+	public_input, _ := witness.New(ecc.BN254.ScalarField())
+	deserialize(public_input, msg.PublicInputs)
+
+	verifying_key := plonk.NewVerifyingKey(ecc.BN254)
+	deserialize(verifying_key, msg.ConstraintSystem)
+
+	err := plonk.Verify(proof, verifying_key, public_input)
 	if err != nil {
-		return false
+		fmt.Println("NO VERIFICA: ", err.Error())
+	} else {
+		fmt.Println("VERIFICA")
 	}
-	pw_base64 := []byte(pw)
-	pw_bytes := make([]byte, base64.StdEncoding.DecodedLen(len(pw_base64)))
-	base64.StdEncoding.Decode(pw_bytes, pw_base64)
-	pw_des.UnmarshalBinary(pw_bytes)
-
-	err = plonk.Verify(proof_des, vk_des, pw_des)
 
 	return err == nil
+}
+
+func deserialize[r io.ReaderFrom](dst r, encoded string) error {
+	bytes_buffer, err := base64.StdEncoding.DecodeString(encoded)
+	if err != nil {
+		return err
+	}
+	reader := bytes.NewReader(bytes_buffer)
+	_, err = dst.ReadFrom(reader)
+
+	return err
 }

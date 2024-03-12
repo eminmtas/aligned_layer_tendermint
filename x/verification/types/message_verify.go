@@ -8,11 +8,12 @@ import (
 
 var _ sdk.Msg = &MsgVerify{}
 
-func NewMsgVerify(creator string, proof string, public_inputs string) *MsgVerify {
+func NewMsgVerify(creator, proof, public_inputs, constraint_system string) *MsgVerify {
 	return &MsgVerify{
-		Creator:      creator,
-		Proof:        proof,
-		PublicInputs: public_inputs,
+		Creator:          creator,
+		Proof:            proof,
+		PublicInputs:     public_inputs,
+		ConstraintSystem: constraint_system,
 	}
 }
 

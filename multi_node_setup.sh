@@ -21,7 +21,7 @@ node_ids=()
 
 for node in "$@"; do
     echo "Initializing $node..."
-    docker run -v $(pwd)/prod-sim/$node:/root/.alignedlayer -it alignedlayerd_i init alignedlayer --chain-id alignedlayer > /dev/null
+    docker run -v $(pwd)/prod-sim/$node:/root/.alignedlayer -it alignedlayerd_i init alignedlayer_$node --chain-id alignedlayer > /dev/null
     
     docker run --rm -it -v $(pwd)/prod-sim/$node:/root/.alignedlayer --entrypoint sed alignedlayerd_i -i 's/"stake"/"'$token'"/g' /root/.alignedlayer/config/genesis.json 
     docker run -v $(pwd)/prod-sim/$node:/root/.alignedlayer -it alignedlayerd_i config set app minimum-gas-prices "0.1$token"

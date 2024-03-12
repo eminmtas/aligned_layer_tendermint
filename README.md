@@ -85,8 +85,6 @@ where you can obtain NODEID by running:
 curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
 ```
 
-Also, change the listening address (`laddr`) to `tcp://0.0.0.0:26657`, so other nodes can connect with you.
-
 By default, state_sync is not enabled. If you'd like to use state_sync you also need to complete the fields
 ```txt
 rpc_servers

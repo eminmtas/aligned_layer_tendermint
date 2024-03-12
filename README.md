@@ -200,10 +200,7 @@ Use the faucet in order to have some balance:
 > If you don't remember the address, you can do the following:
 > `alignedlayerd keys show <id_string>` or `alignlayerd keys list`
 
-A POST request can be sent using SwaggerUI at:
-Faucet Link: [http://endpoint:4500/](http://endpoint:4500/)
-
-Or it can be sent with CURL:
+A POST request can be sent to the faucet endpoint at [http://endpoint:4500/](http://localhost:4500/), either interactively using Swagger UI, or with CURL:
 
 ```sh
 curl -X POST "http://endpoint:4500/" -H  "accept: application/json" -H  "Content-Type: application/json" -d "{  \"address\": \"address\",  \"coins\": [    \"10token\"  ]}"

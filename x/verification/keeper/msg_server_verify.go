@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/base64"
+	"strconv"
 
 	"alignedlayer/x/verification/types"
 
@@ -15,12 +16,17 @@ import (
 
 func (k msgServer) Verify(goCtx context.Context, msg *types.MsgVerify) (*types.MsgVerifyResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	_ = ctx
-	if !verify(msg.Proof, msg.PublicInputs) {
-		return nil, types.ErrSample
-	} else {
-		return &types.MsgVerifyResponse{}, nil
-	}
+
+	result := verify(msg.Proof, msg.PublicInputs)
+	event := sdk.NewEvent("verification",
+		sdk.NewAttribute("proof", msg.Proof),
+		sdk.NewAttribute("public_inputs", msg.PublicInputs),
+		sdk.NewAttribute("verifier", "plonk"),
+		sdk.NewAttribute("verified", strconv.FormatBool(result)))
+
+	ctx.EventManager().EmitEvent(event)
+
+	return &types.MsgVerifyResponse{}, nil
 }
 
 func verify(proof string, pw string) bool {

@@ -10,9 +10,9 @@ var _ sdk.Msg = &MsgVerify{}
 
 func NewMsgVerify(creator string, proof string, public_inputs string) *MsgVerify {
 	return &MsgVerify{
-		Creator: creator,
-		Proof:   proof,
-		Pinputs: public_inputs,
+		Creator:      creator,
+		Proof:        proof,
+		PublicInputs: public_inputs,
 	}
 }
 

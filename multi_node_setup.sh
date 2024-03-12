@@ -100,7 +100,7 @@ echo "Setting up docker compose..."
 rm -f ./prod-sim/docker-compose.yml
 printf "version: '3.7'\nnetworks:\n  net-public:\nservices:\n" > ./prod-sim/docker-compose.yml
 for node in "$@"; do
-    printf "  lambchaind-$node:\n    command: start\n    image: lambchaind_i\n    container_name: $node\n    volumes:\n      - ./prod-sim/$node:/root/.lambchain\n    networks:\n      - net-public\n" >> ./prod-sim/docker-compose.yml
+    printf "  lambchaind-$node:\n    command: start\n    image: lambchaind_i\n    container_name: $node\n    volumes:\n      - ./$node:/root/.lambchain\n    networks:\n      - net-public\n" >> ./prod-sim/docker-compose.yml
     if [ $node == "$1" ]; then
         printf "    ports:\n      - 0.0.0.0:26657:26657\n" >> ./prod-sim/docker-compose.yml
     fi

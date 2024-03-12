@@ -178,7 +178,7 @@ Sets up a network of docker containers each with a validator node.
 
 Build docker image:
 ```sh
-docker build . -t lambchaind_i
+docker build . -t alignedlayerd_i
 ```
 
 After building the image we need to set up the files for each cosmos validator node.
@@ -196,11 +196,11 @@ bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 
 Start nodes:
 ```sh
-docker-compose --project-name lambchain -f ./prod-sim/docker-compose.yml up --detach
+docker-compose --project-name alignedlayer -f ./prod-sim/docker-compose.yml up --detach
 ```
 This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
 
 You can verify that it works by running (replacing `<node1_name>` by the name of the first node chosen in the bash script):
 ```sh
-docker run --rm -it --network lambchain_net-public lambchaind_i status --node "tcp://<node1_name>:26657"
+docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --node "tcp://<node1_name>:26657"
 ```

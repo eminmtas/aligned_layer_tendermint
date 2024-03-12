@@ -5,6 +5,6 @@ WORKDIR /root
 
 COPY . .
 
-RUN ignite chain build
+RUN ignite chain build 
 
-ENTRYPOINT [ "lambchaind" ]
+ENTRYPOINT [ "alignedlayerd" ]

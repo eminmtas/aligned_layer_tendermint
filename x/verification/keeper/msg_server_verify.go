@@ -19,9 +19,6 @@ func (k msgServer) Verify(goCtx context.Context, msg *types.MsgVerify) (*types.M
 
 	result := verify(msg.Proof, msg.PublicInputs)
 	event := sdk.NewEvent("verification",
-		sdk.NewAttribute("proof", msg.Proof),
-		sdk.NewAttribute("public_inputs", msg.PublicInputs),
-		sdk.NewAttribute("verifier", "plonk"),
 		sdk.NewAttribute("verified", strconv.FormatBool(result)))
 
 	ctx.EventManager().EmitEvent(event)

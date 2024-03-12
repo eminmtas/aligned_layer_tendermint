@@ -61,6 +61,9 @@ func main() {
 	scs := ccs.(*cs.SparseR1CS)
 	kzgsrs, _ := test.NewKZGSRS(scs)
 
+	fmt.Println("SRS Coeffs")
+	fmt.Println(scs.Coefficients[0:5])
+
 	// Witnesses instantiation. Witness is known only by the prover,
 	// while public w is a public data known by the verifier.
 	var w Circuit

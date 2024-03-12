@@ -43,7 +43,7 @@ alignedlayerd query tx <txhash>
 ## How to join as validator
 If you want to join as validator, follow these steps:
 
-1. 
+1. Get the code and build the app:
 ```sh
 git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
 cd aligned_layer_tendermint
@@ -53,19 +53,21 @@ ignite chain build
 ```sh
 alignedlayerd --help
 ```
+You may need to add ~/go/bin to PATH.
 3. To create the node, run
 ```sh
-alignedlayerd init <your-node-name > --chain-id alignedlayerd
+alignedlayerd init <your-node-name> --chain-id alignedlayer
 ```
 If you have already run this command, you can use the -o flag to overwrite previously generated files. 
+
 4. You now need to download the blockchain genesis file and replace the one which was automatically generated for you:
 ```sh
 curl admin@blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 5. Open the config.toml file available in $HOME/.alignedlayer/config. Add the following address to the [p2p] seeds and persistent_peers:
 ```txt
-seeds = "COMPLETEHERE@blockchain-1:26656"
-persistent_peers = "COMPLETEHERE@blockchain-1:26656"
+seeds = "$(curl -s blockchain-1:26657/status | jq -r '.result.node_info.id')@blockchain-1:26656"
+persistent_peers = "$(curl -s blockchain-1:26657/status | jq -r '.result.node_info.id')@blockchain-1:26656"
 ```
 By default, state_sync is not enabled. If you'd like to use state_sync you also need to complete the fields
 ```txt
@@ -88,7 +90,7 @@ It should return false.
 
 8. Make an account:
 ```sh
-alignedlayerd keys add <your-validator >
+alignedlayerd keys add <your-validator>
 ```
 This commands will return the following information:
 ```txt
@@ -97,7 +99,8 @@ address: cosmosxxxxxxxxxxxx
  pubkey: '{"@type":"xxxxxx","key":"xxxxxx"}'
  type: local
 ```
-You'll be encouraged to save a moniker in case you need to recover your account. 
+You'll be encouraged to save a mnemomic in case you need to recover your account. 
+
 Afterwards, you need to request funds to the administrator. 
 
 
@@ -118,9 +121,14 @@ You can get your validator address by running
 alignedlayerd tendermint show-validator
 ```
 
+This will return an address with the format:
+```
+{"@type": "...", "key": "..."}
+```
+
 Now, run:
 ```sh
-alignedlayerd tx staking create-validator validator.json --from <your-node-address > --node tcp://blockchain-1:26656
+alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656
 ```
 
 10. Check whether your validator was accepted:

@@ -93,18 +93,24 @@ trust_hash
 trust_period
 ```
 
-5. Start your node:
+5. The two most important ports are 26656 and 26657.
+
+The first is used to make the p2p communication with other nodes. This port should be open to world, in order to allow others to communicate with you.
+
+The second one is for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you should change the IP to.
+
+6. Start your node:
 ```sh
 alignedlayerd start
 ```
 
-6. Check if your node is already synced:
+7. Check if your node is already synced:
 ```sh
 curl -s 127.0.0.1:26657/status |  jq '.result.sync_info.catching_up'
 ```
 It should return false. 
 
-7. Make an account:
+8. Make an account:
 ```sh
 alignedlayerd keys add <your-validator>
 ```
@@ -120,7 +126,7 @@ You'll be encouraged to save a mnemomic in case you need to recover your account
 Afterwards, you need to request funds to the administrator. 
 
 
-8. To create the validator, you need to create a validator.json file with the following information:
+9. To create the validator, you need to create a validator.json file with the following information:
 ```json
 {
 	"pubkey": {"@type": "...", "key": "..."},
@@ -142,12 +148,18 @@ Now, run:
 alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656
 ```
 
-9. Check whether your validator was accepted:
+10. Check whether your validator was accepted:
 ```sh
 query tendermint-validator-set
 ```
 
+Our public nodes have the following IPs. Please be aware that they are in development stage, so expect inconsistency.
 
+```
+91.107.239.79
+116.203.81.174
+88.99.174.203
+```
 
 ## How It Works
 

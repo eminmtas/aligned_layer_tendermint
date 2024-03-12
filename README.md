@@ -125,7 +125,7 @@ Afterwards, you need to request funds to the administrator.
 8. To create the validator, you need to create a validator.json file with the following information:
 ```json
 {
-	"pubkey": your-validator-address,
+	"pubkey": {"@type": "...", "key": "..."},
 	"amount": "xxxxxxstake",
 	"moniker": "your-validator",
 	"commission-rate": "0.1",
@@ -134,14 +134,9 @@ Afterwards, you need to request funds to the administrator.
 	"min-self-delegation": "1"
 }
 ```
-You can get your validator address by running
+You can get your pubkey by running
 ```sh
 alignedlayerd tendermint show-validator
-```
-
-This will return an address with the format:
-```
-{"@type": "...", "key": "..."}
 ```
 
 Now, run:

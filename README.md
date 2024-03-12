@@ -1,4 +1,4 @@
-# Bootcamp Verifying Lambchain (WIP)
+# Aligned Layer Blokchain
 
 An application-specific blockchain built using [Cosmos SDK](https://docs.cosmos.network/) and created with [Ignite CLI](https://ignite.com/). The blockchain offers a variety of zkSNARK implementations to verify proofs sent over transactions, and stores their results.
 
@@ -24,7 +24,7 @@ This command installs dependencies, builds, initializes, and starts your blockch
 To send a verify message (transaction), run:
 
 ```sh
-lambchaind tx lambchain verify --from alice --chain-id lambchain <proof>
+alignedlayerd tx verification verify --from alice --chain-id alignedlayer <proof>
 ```
 
 This will output the transaction result (usually containing default values as it doesn't wait for the blockchain to execute it), and the transaction hash.
@@ -37,22 +37,22 @@ txhash: F105EAD99F96289914EF16CB164CE43A330AEDB93CAE2A1CFA5FAE013B5CC515
 To get the transaction result, run:
 
 ```sh
-lambchaind query tx <txhash>
+alignedlayerd query tx <txhash>
 ```
 
 ## How It Works
 
 ### Project Anatomy
 
-The core of the state machine `App` is defined in [app.go](https://github.com/lambdaclass/lambchain/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes messages to the appropriate module for handling. A transaction contains any number of messages.
+The core of the state machine `App` is defined in [app.go](https://github.com/lambdaclass/aligned_layer_tendermint/blob/main/app/app.go). The application inherits from Cosmos' `BaseApp`, which routes messages to the appropriate module for handling. A transaction contains any number of messages.
 
-Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/lambchain/blob/main/x/) directory.
+Cosmos SDK provides an Application Module interface to facilitate the composition of modules to form a functional unified application. Custom modules are defined in the [x](https://github.com/lambdaclass/aligned_layer_tendermint/blob/main/x/) directory.
 
-A module defines a message service for handling messages. These services are defined in a [protobuf file](https://github.com/lambdaclass/lambchain/blob/main/proto/lambchain/lambchain/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/msg_server.go), which is registered in the main application.
+A module defines a message service for handling messages. These services are defined in a [protobuf file](https://github.com/lambdaclass/aligned_layer_tendermint/blob/main/proto/alignedlayer/verification/tx.proto). The methods are then implemented in a [message server](https://github.com/lambdaclass/aligned_layer_tendermint/blob/main/x/verification/keeper/msg_server.go), which is registered in the main application.
 
-Each message's type is identified by its fully-qualified name. For example, the _verify_ message has the type `/lambchain.lambchain.MsgVerify`.
+Each message's type is identified by its fully-qualified name. For example, the _verify_ message has the type `/alignedlayer.verification.MsgVerify`.
 
-A module usually defines a [keeper](https://github.com/lambdaclass/lambchain/blob/main/x/lambchain/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
+A module usually defines a [keeper](https://github.com/lambdaclass/aligned_layer_tendermint/blob/main/x/verification/keeper/keeper.go) which encapsulates the sub-state of each module, tipically through a key-value store. A reference to the keeper is stored in the message server to be accesed by the handlers.
 
 <p align="center">
   <img src="imgs/Diagram_Cosmos.svg">
@@ -80,7 +80,7 @@ about other scaffolding commands.
 A transaction can be created and sent with protobuf with ignite CLI, using the following command:
 
 ```sh
-lambchaind tx lambchain verify --from alice --chain-id lambchain "base64-encoded proof"
+alignedlayerd tx verification verify --from alice --chain-id alignedlayer "base64-encoded proof"
 ```
 
 A JSON representation of the transaction can be obtained with the `--generate-only` flag. It contains transaction metadata and a set of messages. A **message** contains the fully-qualified type to route it correctly, and its parameters.
@@ -90,7 +90,7 @@ A JSON representation of the transaction can be obtained with the `--generate-on
     "body": {
         "messages": [
             {
-                "@type": "/lambchain.lambchain.MsgVerify",
+                "@type": "/alignedlayer.verification.MsgVerify",
                 "creator": "cosmos1524vzjchy064rr98d2de7u6uvl4qr3egfq67xn",
                 "proof": "base64-encoded proof"
             }
@@ -125,6 +125,52 @@ After Comet BFT receives the transaction, its relayed to the application through
     - The `PostHandler`'s are executed.
 
 The response is then encoded in the transaction result, and added to the blockchain.
+
+### Interacting with a Node
+
+The full-node exposes three different types of endpoints for interacting with it.
+
+#### gRPC
+
+The node exposes a gRPC server on port 9090.
+
+To get a list with all services, run:
+
+```sh
+grpcurl -plaintext localhost:9090 list
+```
+
+The requests can be made programatically with any programming language containing the protobuf definitions.
+
+#### REST
+
+The node exposes REST endpoints via gRPC-gateway on port 1317. An OpenAPI specification can be found [here](https://docs.cosmos.network/api)
+
+To get the status of the server, run:
+
+```sh
+curl "http://localhost:1317/cosmos/base/node/v1beta1/status" 
+```
+
+#### CometBFT RPC
+
+The CometBFT layer exposes a RPC server on port 26657. An OpenAPI specification can be found in [here](https://docs.cometbft.com/v0.38/rpc/).
+
+When sending the transaction, it must be sent serialized with protobuf and encoded in base64, like the following example:
+
+
+```json
+{
+    "jsonrpc": "2.0",
+    "id": 2,
+    "method": "broadcast_tx_sync",
+    "params": {
+        "tx": "CloKWAoeL2xhbWJjaGFpbi5sYW1iY2hhaW4uTXNnVmVyaWZ5EjYKLWNvc21vczE1MjR2empjaHkwNjRycjk4ZDJkZTd1NnV2bDRxcjNlZ2ZxNjd4bhIFcHJvb2YSWApQCkYKHy9jb3Ntb3MuY3J5cHRvLnNlY3AyNTZrMS5QdWJLZXkSIwohAn0JsZxYl0K5OPEcDNS6nTDsERXapNMidfDtTtrsjtGwEgQKAggBGA0SBBDAmgwaQIzdKrUQB9oMGpFTbPJgLMbcGDvteJ+KIShE7FlUxcipS9i8FslYSqPoZ0RUg9LAGl4/PMD8s/ooEpzO4N7XqLs="
+    }
+}
+```
+
+This is the format used by the CLI.
 
 ## Setting up multiple local nodes using docker
 

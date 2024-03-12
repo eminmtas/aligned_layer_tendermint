@@ -1,19 +1,22 @@
+APP=alignedlayerd
+CHAIN_ID=alignedlayer
+
 generate:
-	lambchaind tx lambchain verify $(PROOF) \
+	$(APP) tx verification verify $(PROOF) \
 		--from alice \
-		--chain-id lambchain \
+		--chain-id $(CHAIN_ID) \
 		--generate-only > transaction.json
 
 sign: transaction.json
-	lambchaind tx sign transaction.json \
-		--chain-id lambchain \
+	$(APP) tx sign transaction.json \
+		--chain-id $(CHAIN_ID) \
 		--keyring-backend test \
 		--from alice \
 		--overwrite \
 		--output-document signed.json
 
 encode: signed.json
-	lambchaind tx encode signed.json > encoded.txt
+	$(APP) tx encode signed.json > encoded.txt
 
 send-without-encode:
 	grpcurl -plaintext \
@@ -25,7 +28,7 @@ send: | encode send-without-encode
 
 # Output result code for HASH transaction
 result:
-	lambchaind query tx $(HASH) \
+	$(APP) query tx $(HASH) \
 		--output json | jq .code
 
 clean:

@@ -53,16 +53,11 @@ func main() {
 
 	scs := ccs.(*cs.SparseR1CS)
 	kzgsrs, _ := test.NewKZGSRS(scs)
-
-	assignment := toProve()
-
-	fullWitness, _ := frontend.NewWitness(&assignment, ecc.BN254.ScalarField())
-	publicWitness, _ := fullWitness.Public()
-
 	pk, vk, _ := plonk.Setup(ccs, kzgsrs)
 
-	var vk_buffer bytes.Buffer
-	vk.WriteTo(&vk_buffer)
+	circuit := toProve()
+	fullWitness, _ := frontend.NewWitness(&circuit, ecc.BN254.ScalarField())
+	publicWitness, _ := fullWitness.Public()
 
 	proof, _ := plonk.Prove(ccs, pk, fullWitness)
 

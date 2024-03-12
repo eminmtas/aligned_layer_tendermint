@@ -92,14 +92,9 @@ func verify(msg *types.MsgVerify) bool {
 	deserialize(public_input, msg.PublicInputs)
 
 	verifying_key := plonk.NewVerifyingKey(ecc.BN254)
-	deserialize(verifying_key, msg.ConstraintSystem)
+	deserialize(verifying_key, msg.VerifyingKey)
 
 	err := plonk.Verify(proof, verifying_key, public_input)
-	if err != nil {
-		fmt.Println("NO VERIFICA: ", err.Error())
-	} else {
-		fmt.Println("VERIFICA")
-	}
 
 	return err == nil
 }

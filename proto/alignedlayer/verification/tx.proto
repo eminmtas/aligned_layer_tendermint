@@ -42,7 +42,7 @@ message MsgVerify {
   string creator           = 1;
   string proof             = 2;
   string public_inputs     = 3;
-  string constraint_system = 4;
+  string verifying_key     = 4;
 }
 
 message MsgVerifyResponse {}

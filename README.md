@@ -41,12 +41,16 @@ alignedlayerd query tx <txhash>
 ```
 
 ## How to join as validator
-### Requirements
-You need to install the following:
-* jq
-* go 
 
-If you want to join as validator, follow these steps:
+### Requirements
+
+You need to install the following:
+
+* jq
+
+### Steps
+
+In order to join the blockchain, you need a public known node to first connect to. As an example, we will name it `blockchain-1`.
 
 1. Get the code and build the app:
 ```sh
@@ -68,18 +72,20 @@ If you have already run this command, you can use the -o flag to overwrite previ
 
 3. You now need to download the blockchain genesis file and replace the one which was automatically generated for you:
 ```sh
-curl admin@blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
+curl -s blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
 4. Add to $HOME/.alignedlayer/config/config.toml the following address to the [p2p] seeds and persistent_peers:
 ```txt
-seeds = "NODEINFO@blockchain-1:26656"
-persistent_peers = "NODEINFO@blockchain-1:26656"
+seeds = "NODEID@blockchain-1:26656"
+persistent_peers = "NODEID@blockchain-1:26656"
 ```
-where you can obtain NODEINFO by running:
+where you can obtain NODEID by running:
 ```sh
 curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
 ```
+
+Also, change the listening address (`laddr`) to `tcp://0.0.0.0:26657`, so other nodes can connect with you.
 
 By default, state_sync is not enabled. If you'd like to use state_sync you also need to complete the fields
 ```txt
@@ -91,7 +97,6 @@ trust_period
 
 5. Start your node:
 ```sh
-cd aligned_layer_tendermint
 alignedlayerd start
 ```
 

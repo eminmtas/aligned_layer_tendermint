@@ -49,15 +49,13 @@ To get the transaction result, run:
 alignedlayerd query tx <txhash>
 ```
 
-If you want to generate a gnark proof by yourself, you must edit the circuit
-definition and soltion in `./prover_examples/gnark_plonk/gnark_plonk.go` and run the following command:
+If you want to generate a gnark proof by yourself, you must edit the circuit definition and soltion in `./prover_examples/gnark_plonk/gnark_plonk.go` and run the following command:
 
 ```sh
 go run ./prover_examples/gnark_plonk/gnark_plonk.go
 ```
 
-This will compile the circuit and create a proof in the root folder
-that is ready to be sent with:
+This will compile the circuit and create a proof in the root folder that is ready to be sent with:
 
 ```sh
 alignedlayerd tx verification verify --from alice --chain-id alignedlayer \

@@ -9,7 +9,7 @@ PROOF_FILE ?= proof.base64
 PUBLIC_INPUTS_FILE ?= public_inputs.base64
 VERIFYING_KEY_FILE ?= verifying_key.base64
 
-prove: | generate-proof send-proof
+prove: | generate-proof send-proof clean
 
 generate-proof:
 	go run gnark_plonk.go

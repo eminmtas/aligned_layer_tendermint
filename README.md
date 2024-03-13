@@ -21,7 +21,7 @@ ignite chain serve
 
 This command installs dependencies, builds, initializes, and starts your blockchain in development.
 
-To send a verify message (transaction), we must use the following command:
+To send a verify message (transaction), use the following command:
 
 ```sh
 alignedlayerd tx verification verify --from alice --chain-id alignedlayer <proof> <public_inputs> <verifying_key>

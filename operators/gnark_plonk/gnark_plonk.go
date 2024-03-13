@@ -37,7 +37,7 @@ func (circuit *Circuit) Define(api frontend.API) error {
 }
 
 // Defines the circuit that will be proved.
-func toProve() Circuit {
+func solution() Circuit {
 	return Circuit{
 		X: 3,
 		Y: 35,
@@ -55,7 +55,7 @@ func main() {
 	kzgsrs, _ := test.NewKZGSRS(ccs.(*cs.SparseR1CS))
 	pk, vk, _ := plonk.Setup(ccs, kzgsrs)
 
-	circuit := toProve()
+	circuit := solution()
 	fullWitness, _ := frontend.NewWitness(&circuit, ecc.BN254.ScalarField())
 	publicWitness, _ := fullWitness.Public()
 

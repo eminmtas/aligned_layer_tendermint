@@ -68,7 +68,7 @@ app.get('/send/:chain/:address', async (req, res) => {
         if (await checker.checkAddress(address, chain) && await checker.checkIp(`${chain}${ip}`, chain)) {
           checker.update(`${chain}${ip}`) // get ::1 on localhost
           console.log('send tokens to ', address)
-          sendTx(address, chain).then(ret => {
+          await sendTx(address, chain).then(ret => {
             console.log(ret)
             checker.update(address)
             res.send({ result: ret })

@@ -25,7 +25,8 @@ send-proof:
 		--node $(ADDRESS)
 
 query-tx:
-	$(CHAIN)d query tx $(HASH)
+	$(CHAIN)d query tx $(HASH) \
+		--node $(ADDRESS)
 
 clean:
 	rm *.base64

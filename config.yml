@@ -8,7 +8,7 @@ accounts:
   coins:
   - 10000token
   - 100000000stake
-- name: alignedlayer_faucet
+- name: faucet
   coins:
   - 10000token
   - 100000000stake
@@ -16,7 +16,7 @@ client:
   openapi:
     path: docs/static/openapi.yml
 faucet:
-  name: alignedlayer_faucet
+  name: faucet
   coins:
   - 5token
   - 100000stake

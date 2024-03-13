@@ -3,7 +3,7 @@ import express from 'express';
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
 import { SigningStargateClient } from "@cosmjs/stargate";
 
-import conf from './config.js'
+import conf from './config/config.js'
 import { FrequencyChecker } from './checker.js';
 
 

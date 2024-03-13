@@ -101,9 +101,10 @@ docker run -v $(pwd)/prod-sim/$1:/root/.alignedlayer -it alignedlayerd_i config 
 
 echo "Setting up faucet files..."
 mkdir -p prod-sim/faucet/.faucet
-touch prod-sim/faucet/config.js
+mkdir -p prod-sim/faucet/config
+cp faucet/config/config.js prod-sim/faucet/config/config.js
 sed -n '6p' ./prod-sim/$1/mnemonic.txt | tr -d '\n' > temp.txt && mv temp.txt ./prod-sim/faucet/.faucet/mnemonic.txt
-sed -i '' 's|\(rpc_endpoint: \).*"|\1"http://'$1':26657"|' prod-sim/faucet/config.js
+sed -i '' 's|\(rpc_endpoint: \).*"|\1"http://'$1':26657"|' prod-sim/faucet/config/config.js
 
 echo "Setting up docker compose..."
 rm -f ./prod-sim/docker-compose.yml
@@ -115,4 +116,4 @@ for node in "$@"; do
     fi
     printf "\n" >> ./prod-sim/docker-compose.yml
 done
-printf "  alignedlayerd-faucet:\n    command: faucet.js\n    image: alignedlayerd_faucet\n    container_name: faucet\n    volumes:\n      - ./faucet/.faucet:/faucet/.faucet\n    networks:\n      - net-public\n    ports:\n      - 8088:8088\n" >> ./prod-sim/docker-compose.yml
+printf "  alignedlayerd-faucet:\n    command: faucet.js\n    image: alignedlayerd_faucet\n    container_name: faucet\n    volumes:\n      - ./faucet/config:/faucet/config\n      - ./faucet/.faucet:/faucet/.faucet\n    networks:\n      - net-public\n    ports:\n      - 8088:8088\n" >> ./prod-sim/docker-compose.yml

@@ -40,17 +40,17 @@ export default {
                 amount: [
                     {
                         denom: "stake",
-                        amount: "69"
+                        amount: "100000"
                     },
                 ],
                 fee: {
                     amount: [
                         {
-                            amount: "0",
+                            amount: "20000",
                             denom: "stake"
                         }
                     ],
-                    gas: "2000000"
+                    gas: "200000"
                 },
             },
             limit: {

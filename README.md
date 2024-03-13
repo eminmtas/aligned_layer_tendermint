@@ -158,6 +158,8 @@ Now, run:
 alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656
 ```
 
+Your validator address is the one you obtained in step 8.
+
 11. Check whether your validator was accepted:
 ```sh
 query tendermint-validator-set

@@ -6,7 +6,9 @@ The Gnark Plonk verifier in the blockchain needs the following base64 encoded el
 - Public Inputs
 - Verifying Key
 
-## Using Gnark Plonk Verifier
+The serialization is performed by the Gnark Plonk library.
+
+## Sending a Proof
 
 Change the circuit definition and solution inside `gnark_plonk.go`:
 

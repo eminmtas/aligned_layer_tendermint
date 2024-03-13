@@ -50,7 +50,7 @@ You need to install the following:
 
 ### Steps
 
-In order to join the blockchain, you need a public known node to first connect to. As an example, we will name it `blockchain-1`.
+In order to join the blockchain, you need a known public node to first connect to. As an example, we will name it `blockchain-1`.
 
 1. Get the code and build the app:
 ```sh
@@ -84,20 +84,27 @@ where you can obtain NODEID by running:
 ```sh
 curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
 ```
-
-By default, state_sync is not enabled. If you'd like to use state_sync you also need to complete the fields
+Choose and specify in $HOME/.alignedlayer/config/app.toml the minimum gas price the validator is willing to accept for processing a transaction:
 ```txt
-rpc_servers
-trust_height
-trust_hash
-trust_period
+minimum-gas-prices = "0.25stake"
+```
+
+Alternatively, you can use the following Cosmos SDK commands:
+```sh
+alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
 ```
 
 5. The two most important ports are 26656 and 26657.
 
-The first is used to make the p2p communication with other nodes. This port should be open to world, in order to allow others to communicate with you.
+The former is used to establish p2p communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the $HOME/.alignedlayer/config/config.toml file contains the right address in the p2p section:
 
-The second one is for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you should change the IP to.
+```txt
+laddr = "tcp://0.0.0.0:26656"
+```
+
+The second port is used for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you should change the IP to.
 
 6. Start your node:
 ```sh
@@ -125,8 +132,15 @@ You'll be encouraged to save a mnemomic in case you need to recover your account
 
 Afterwards, you need to request funds to the administrator. 
 
+9. Ask for tokens (complete with faucet info)
 
-9. To create the validator, you need to create a validator.json file with the following information:
+10. To create the validator, you need to create a validator.json file. First, obtain your validator pubkey:
+
+```sh
+alignedlayerd tendermint show-validator
+```
+
+Now create the validator.json file:
 ```json
 {
 	"pubkey": {"@type": "...", "key": "..."},
@@ -138,17 +152,13 @@ Afterwards, you need to request funds to the administrator.
 	"min-self-delegation": "1"
 }
 ```
-You can get your pubkey by running
-```sh
-alignedlayerd tendermint show-validator
-```
 
 Now, run:
 ```sh
 alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656
 ```
 
-10. Check whether your validator was accepted:
+11. Check whether your validator was accepted:
 ```sh
 query tendermint-validator-set
 ```

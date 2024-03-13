@@ -17,9 +17,7 @@ export default {
         path: `${HOME}/history.db` // save request states 
     },
     project: {
-        name: "Demo of Side Exchange",
-        logo: "https://side.one/favicon.ico",
-        deployer: `<a href="https://demo.side.exchange">Side Exchange</a>`
+        name: "AlignedLayer Faucet",
     },
     blockchains: [
         {

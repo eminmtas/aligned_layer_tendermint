@@ -1,7 +1,6 @@
 #!/bin/bash
-NODE_NAME=$1
-VALIDATOR=$2
-STAKING_AMOUNT=$3
+VALIDATOR=$1
+STAKING_AMOUNT=$2
 
 NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
@@ -12,7 +11,7 @@ git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
 cd aligned_layer_tendermint
 ignite chain build 
 
-$CHAIN_BINARY init $NODE_NAME --chain-id $CHAIN_ID
+$CHAIN_BINARY init $VALIDATOR --chain-id $CHAIN_ID
 curl $PEER_ADDR:26657/genesis | jq '.result.genesis' > $NODE_HOME/config/genesis.json
 
 NODEID=$(curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id')

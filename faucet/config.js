@@ -38,13 +38,13 @@ export default {
                 amount: [
                     {
                         denom: "stake",
-                        amount: "100000"
+                        amount: "200000"
                     },
                 ],
                 fee: {
                     amount: [
                         {
-                            amount: "20000",
+                            amount: "10000",
                             denom: "stake"
                         }
                     ],

@@ -68,7 +68,7 @@ app.get('/send/:chain/:address', async (req, res) => {
         if (await checker.checkAddress(address, chain) && await checker.checkIp(`${chain}${ip}`, chain)) {
           checker.update(`${chain}${ip}`) // get ::1 on localhost
           console.log('send tokens to ', address)
-          sendTx(address, chain).then(ret => {
+          await sendTx(address, chain).then(ret => {
             console.log(ret)
             checker.update(address)
             res.send({ result: ret })
@@ -101,10 +101,7 @@ async function sendTx(recipient, chain) {
   if (chainConf) {
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(chainConf.sender.mnemonic, chainConf.sender.option);
     const [firstAccount] = await wallet.getAccounts();
-    const actual_pubkey = "AzZLS8/f16l8thTa+xs5/0XUeUJsN2Me6AGxkGDQvB4S"
     console.log("sender", firstAccount);
-    console.log(actual_pubkey.length)
-    console.log("pubkey", new TextDecoder("utf-8").decode(firstAccount.pubkey));
 
     const rpcEndpoint = chainConf.endpoint.rpc_endpoint;
     const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);

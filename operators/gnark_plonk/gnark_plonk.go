@@ -17,12 +17,9 @@ import (
 
 // gnark is a zk-SNARK library written in Go. Circuits are regular structs.
 // The inputs must be of type frontend.Variable and make up the witness.
-// The witness has a
-//   - secret part --> known to the prover only
-//   - public part --> known to the prover and the verifier
 type Circuit struct {
-	X frontend.Variable `gnark:"x"`       // x  --> secret visibility (default)
-	Y frontend.Variable `gnark:",public"` // Y  --> public visibility
+	X frontend.Variable `gnark:"x"`
+	Y frontend.Variable `gnark:",public"`
 }
 
 // Define declares the circuit logic. The compiler then produces a list of constraints
@@ -39,13 +36,17 @@ func (circuit *Circuit) Define(api frontend.API) error {
 	return nil
 }
 
-// Defines the proof that will be proved.
+// Defines the circuit that will be proved.
 func toProve() Circuit {
 	return Circuit{
 		X: 3,
 		Y: 35,
 	}
 }
+
+//////////////////////
+//// DON'T CHANGE ////
+//////////////////////
 
 func main() {
 	var myCircuit Circuit

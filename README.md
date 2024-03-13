@@ -49,6 +49,9 @@ You need to install the following:
 * jq
 
 ### Steps
+To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives two command line parameters: the name for the validator, and the stake amount. 
+
+CAUTION: The script is not yet functional. The validator cannot ask for tokens automatically yet. 
 
 In order to join the blockchain, you need a known public node to first connect to. As an example, we will name it `blockchain-1`.
 
@@ -162,7 +165,7 @@ Your validator address is the one you obtained in step 8.
 
 11. Check whether your validator was accepted:
 ```sh
-query tendermint-validator-set
+alignedlayerd query tendermint-validator-set
 ```
 
 Our public nodes have the following IPs. Please be aware that they are in development stage, so expect inconsistency.

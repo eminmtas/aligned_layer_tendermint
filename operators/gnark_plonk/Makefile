@@ -1,4 +1,4 @@
-.PHONY: ge plonk-bad-test query-tx
+.PHONY: prove generate-proof send-proof query-tx clean
 
 CHAIN ?= alignedlayer
 MODULE ?= verification

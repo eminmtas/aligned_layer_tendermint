@@ -51,8 +51,7 @@ func main() {
 	var myCircuit Circuit
 	ccs, _ := frontend.Compile(ecc.BN254.ScalarField(), scs.NewBuilder, &myCircuit)
 
-	scs := ccs.(*cs.SparseR1CS)
-	kzgsrs, _ := test.NewKZGSRS(scs)
+	kzgsrs, _ := test.NewKZGSRS(ccs.(*cs.SparseR1CS))
 	pk, vk, _ := plonk.Setup(ccs, kzgsrs)
 
 	circuit := toProve()

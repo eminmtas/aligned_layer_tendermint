@@ -174,11 +174,12 @@ This is the format used by the CLI.
 
 ## Setting up multiple local nodes using docker
 
-Sets up a network of docker containers each with a validator node.
+Sets up a network of docker containers each with a validator node and a faucet account.
 
-Build docker image:
+Build docker images:
 ```sh
 docker build . -t alignedlayerd_i
+docker build . -t alignedlayerd_faucet -f nodeDockerfile
 ```
 
 After building the image we need to set up the files for each cosmos validator node.
@@ -187,6 +188,7 @@ The steps are:
 - Add users for each node with sufficient funds.
 - Create and distribute inital genesis file.
 - Set up addresses between nodes.
+- Set up faucet files.
 - Build docker compose file.
 
 Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`)
@@ -199,6 +201,8 @@ Start nodes:
 docker-compose --project-name alignedlayer -f ./prod-sim/docker-compose.yml up --detach
 ```
 This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
+
+It also creates an image that runs the faucet frontend in `localhost:8088`.
 
 You can verify that it works by running (replacing `<node1_name>` by the name of the first node chosen in the bash script):
 ```sh

@@ -78,7 +78,16 @@ If you have already run this command, you can use the -o flag to overwrite previ
 curl -s blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
-4. Add to $HOME/.alignedlayer/config/config.toml the following address to the [p2p] seeds and persistent_peers:
+4. To configure persistent peers, seeds and gas prices, run the following commands:
+```sh
+alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
+``` 
+
+Alternatively, you can update the configuration manually:
+
+Add to $HOME/.alignedlayer/config/config.toml the following address to the [p2p] seeds and persistent_peers:
 ```txt
 seeds = "NODEID@blockchain-1:26656"
 persistent_peers = "NODEID@blockchain-1:26656"
@@ -90,13 +99,6 @@ curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
 Choose and specify in $HOME/.alignedlayer/config/app.toml the minimum gas price the validator is willing to accept for processing a transaction:
 ```txt
 minimum-gas-prices = "0.25stake"
-```
-
-Alternatively, you can use the following Cosmos SDK commands:
-```sh
-alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
-alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656" --skip-validate
-alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
 ```
 
 5. The two most important ports are 26656 and 26657.

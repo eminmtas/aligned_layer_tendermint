@@ -24,7 +24,21 @@ Send the proof to the blockchain:
 make send-proof
 ```
 
-This will output the transaction hash, which we an query by running:
+This will output the transaction hash.
+
+To clean the generated files, run:
+
+```sh
+make clean
+```
+
+The last three steps can be executed in a single command with:
+
+```sh
+make prove
+```
+
+To query the result, run:
 
 ```sh
 HASH=63a... make query-tx

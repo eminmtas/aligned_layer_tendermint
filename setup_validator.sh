@@ -19,7 +19,6 @@ $CHAIN_BINARY config set config p2p.seeds "$NODEID@$PEER_ADDR:26656" --skip-vali
 $CHAIN_BINARY config set config p2p.persistent_peers "$NODEID@$PEER_ADDR:26656" --skip-validate
 $CHAIN_BINARY config set app minimum-gas-prices 0.25stake --skip-validate
 
-#ADD ASK FOR TOKENS
 
 x=$($CHAIN_BINARY keys add $VALIDATOR)
 NODE_ADDR=$(echo $x | awk '{print $3}')
@@ -36,8 +35,7 @@ echo '{"pubkey": '$VALIDATOR_KEY',
 	"commission-max-change-rate": "0.01",
 	"min-self-delegation": "1"}' > validator.json
 
-open validator.json
-echo $NODE_ADDR
+#ADD ASK FOR TOKENS
 
 $CHAIN_BINARY tx staking create-validator $HOME/$NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26656
 

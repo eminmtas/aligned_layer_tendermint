@@ -101,10 +101,7 @@ async function sendTx(recipient, chain) {
   if (chainConf) {
     const wallet = await DirectSecp256k1HdWallet.fromMnemonic(chainConf.sender.mnemonic, chainConf.sender.option);
     const [firstAccount] = await wallet.getAccounts();
-    const actual_pubkey = "AzZLS8/f16l8thTa+xs5/0XUeUJsN2Me6AGxkGDQvB4S"
     console.log("sender", firstAccount);
-    console.log(actual_pubkey.length)
-    console.log("pubkey", new TextDecoder("utf-8").decode(firstAccount.pubkey));
 
     const rpcEndpoint = chainConf.endpoint.rpc_endpoint;
     const client = await SigningStargateClient.connectWithSigner(rpcEndpoint, wallet);

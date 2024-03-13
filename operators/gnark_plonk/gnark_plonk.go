@@ -62,7 +62,7 @@ func main() {
 	proof, _ := plonk.Prove(ccs, pk, fullWitness)
 
 	serialize(proof, "proof.base64")
-	serialize(publicWitness, "public_witness.base64")
+	serialize(publicWitness, "public_inputs.base64")
 	serialize(vk, "verifying_key.base64")
 
 }

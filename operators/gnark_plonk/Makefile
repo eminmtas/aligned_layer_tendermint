@@ -9,6 +9,8 @@ PROOF_FILE ?= proof.base64
 PUBLIC_INPUTS_FILE ?= public_inputs.base64
 VERIFYING_KEY_FILE ?= verifying_key.base64
 
+ADDRESS ?= tcp://localhost:26657
+
 prove: | generate-proof send-proof clean
 
 generate-proof:
@@ -19,7 +21,8 @@ send-proof:
 		$$(cat $(PROOF_FILE)) \
 		$$(cat $(PUBLIC_INPUTS_FILE)) \
 		$$(cat $(VERIFYING_KEY_FILE)) \
-		--from alice --chain-id $(CHAIN)
+		--from alice --chain-id $(CHAIN) \
+		--node $(ADDRESS)
 
 query-tx:
 	$(CHAIN)d query tx $(HASH)

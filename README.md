@@ -280,5 +280,5 @@ npm install
 node faucet.js
 ```
 
-Then the express server is started at `localhost:8080`
+Then the express server is started at `localhost:8088`
 Note: The Tendermint Node(Blockchain) has to be running.

@@ -228,7 +228,7 @@ docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --n
 ## Distribution
 Cosmos's distribution mechanism does not distribute funds in as precisely as active reward distribution mechanisms. 
 
-This simple distribution mechanism describes a functional way to passively distribute rewards between validators and delegators.
+Validators and delegators can use the following commands to claim their rewards:
 
 ### validator-outstanding-rewards
 The **validator-outstanding-rewards** command allows users to query all outstanding (un-withdrawn) rewards for a validator and all their delegations.

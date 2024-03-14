@@ -8,8 +8,8 @@ Ignite CLI is used to generate boilerplate code for a Cosmos SDK application, ma
 
 ## Requirements
 
-- Go
-- Ignite
+- Go (v1.22)
+- Ignite (v28.2)
 
 ## Example Application Usage with Local Blockchain 
 

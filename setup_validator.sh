@@ -14,6 +14,7 @@ git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
 cd aligned_layer_tendermint
 ignite chain build 
 
+$CHAIN_BINARY comet unsafe-reset-all
 $CHAIN_BINARY init $VALIDATOR --chain-id $CHAIN_ID --overwrite
 curl $PEER_ADDR:26657/genesis | jq '.result.genesis' > $NODE_HOME/config/genesis.json
 

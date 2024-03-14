@@ -72,7 +72,11 @@ You need to install the following:
 * jq
 
 ### Steps
-To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives two command line parameters: the name for the validator, and the stake amount. 
+To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator, the stake amount, and the token name. For example:
+```sh
+bash setup_validator.sh myValidator 60000000 stake
+```
+
 
 CAUTION: The script is not yet functional. The validator cannot ask for tokens automatically yet. 
 
@@ -101,7 +105,11 @@ If you have already run this command, you can use the -o flag to overwrite previ
 curl -s blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
-4. To configure persistent peers, seeds and gas prices, run the following commands:
+4. Obtain your NODEID by running:
+```sh
+curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
+```
+To configure persistent peers, seeds and gas prices, run the following commands:
 ```sh
 alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
 alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656" --skip-validate
@@ -115,10 +123,7 @@ Add to $HOME/.alignedlayer/config/config.toml the following address to the [p2p]
 seeds = "NODEID@blockchain-1:26656"
 persistent_peers = "NODEID@blockchain-1:26656"
 ```
-where you can obtain NODEID by running:
-```sh
-curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
-```
+
 Choose and specify in $HOME/.alignedlayer/config/app.toml the minimum gas price the validator is willing to accept for processing a transaction:
 ```txt
 minimum-gas-prices = "0.25stake"
@@ -183,7 +188,7 @@ Now create the validator.json file:
 
 Now, run:
 ```sh
-alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656
+alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656 --fees 20000stake
 ```
 
 Your validator address is the one you obtained in step 8.

@@ -1,6 +1,7 @@
 #!/bin/bash
 VALIDATOR=$1
 STAKING_AMOUNT=$2
+TOKEN=$3
 
 NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
@@ -17,7 +18,7 @@ curl $PEER_ADDR:26657/genesis | jq '.result.genesis' > $NODE_HOME/config/genesis
 NODEID=$(curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id')
 $CHAIN_BINARY config set config p2p.seeds "$NODEID@$PEER_ADDR:26656" --skip-validate
 $CHAIN_BINARY config set config p2p.persistent_peers "$NODEID@$PEER_ADDR:26656" --skip-validate
-$CHAIN_BINARY config set app minimum-gas-prices 0.25stake --skip-validate
+$CHAIN_BINARY config set app minimum-gas-prices 0.25$TOKEN --skip-validate
 
 
 x=$($CHAIN_BINARY keys add $VALIDATOR)
@@ -28,7 +29,7 @@ cd $NODE_HOME/config
 touch validator.json
 
 echo '{"pubkey": '$VALIDATOR_KEY',
-	"amount": "'$STAKING_AMOUNT'stake",
+	"amount": "'$STAKING_AMOUNT$TOKEN'",
 	"moniker": "'$VALIDATOR'",
 	"commission-rate": "0.1",
 	"commission-max-rate": "0.2",
@@ -37,6 +38,6 @@ echo '{"pubkey": '$VALIDATOR_KEY',
 
 #ADD ASK FOR TOKENS
 
-$CHAIN_BINARY tx staking create-validator $HOME/$NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26656
+$CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26656 --fees 20000$TOKEN
 
 $CHAIN_BINARY start

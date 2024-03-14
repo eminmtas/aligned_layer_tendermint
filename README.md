@@ -224,3 +224,69 @@ You can verify that it works by running (replacing `<node1_name>` by the name of
 ```sh
 docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --node "tcp://<node1_name>:26657"
 ```
+
+## Distribution
+Cosmos's distribution mechanism does not distribute funds in as precisely as active reward distribution mechanisms. 
+
+This simple distribution mechanism describes a functional way to passively distribute rewards between validators and delegators.
+
+### validator-outstanding-rewards
+The **validator-outstanding-rewards** command allows users to query all outstanding (un-withdrawn) rewards for a validator and all their delegations.
+
+```sh
+alignedlayerd query distribution validator-outstanding-rewards [validator] [flags]
+```
+
+Example:
+```sh
+alignedlayerd query distribution validator-outstanding-rewards cosmosvaloper1...
+```
+Example Output:
+```sh
+rewards:
+- amount: "1000000.000000000000000000"
+  denom: stake
+```
+
+### validator-distribution-info
+The **validator-distribution-info** command allows users to query validator commission and self-delegation rewards for validator.
+
+Example:
+```sh
+alignedlayerd query distribution validator-distribution-info cosmosvaloper1...
+```
+Example output:
+```sh
+commission:
+- amount: "100000.000000000000000000"
+  denom: stake
+operator_address: cosmosvaloper1...
+self_bond_rewards:
+- amount: "100000.000000000000000000"
+  denom: stake
+```
+
+### withdraw-rewards
+The **withdraw-rewards** command allows users to withdraw all rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator and the user proves the **--commission** flag.
+```sh
+alignedlayerd tx distribution withdraw-rewards [validator-addr] [flags]
+```
+
+Example:
+```sh
+alignedlayerd tx distribution withdraw-rewards cosmosvaloper1... --from cosmos1... --commission
+```
+
+See the Cosmos' [documentation](https://docs.cosmos.network/main/build/modules/distribution) to learn
+about other distribution commands.
+
+## Bank
+### balances
+You can use the **balances** command to query account balances by address.
+```sh
+alignedlayerd query bank balances [address] [flags]
+```
+Example:
+```sh
+alignedlayerd query bank balances cosmos1..
+```

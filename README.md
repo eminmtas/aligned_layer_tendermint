@@ -72,13 +72,10 @@ You need to install the following:
 * jq
 
 ### Steps
-To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator, the stake amount, and the token name. For example:
+To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator and the stake amount. For example:
 ```sh
-bash setup_validator.sh myValidator 60000000 stake
+bash setup_validator.sh myValidator 1000000 stake
 ```
-
-
-CAUTION: The script is not yet functional. The validator cannot ask for tokens automatically yet. 
 
 In order to join the blockchain, you need a known public node to first connect to. As an example, we will name it `blockchain-1`.
 
@@ -163,9 +160,7 @@ address: cosmosxxxxxxxxxxxx
 ```
 You'll be encouraged to save a mnemomic in case you need to recover your account. 
 
-Afterwards, you need to request funds to the administrator. 
-
-9. Ask for tokens (complete with faucet info)
+9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address. 
 
 10. To create the validator, you need to create a validator.json file. First, obtain your validator pubkey:
 
@@ -433,6 +428,8 @@ Now the web view can used to request tokens or curl can be used as follows:
 ```sh
 curl http://localhost:8088/send/alignedlayer/:address
 ```
+
+We are most grateful to Ping.pub's faucet, available at github.com/ping-pub/faucet.
 ### Claiming Staking Rewards
 
 Validators and delegators can use the following commands to claim their rewards:
@@ -497,3 +494,8 @@ Example:
 ```sh
 alignedlayerd query bank balances cosmos1..
 ```
+
+# Acknowledgements
+We are most grateful to [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [Ignite CLI](https://github.com/ignite/cli), [CometBFT](https://github.com/cometbft/cometbft) and [Ping.pub](github.com/ping-pub).
+
+

@@ -230,7 +230,7 @@ Cosmos's distribution mechanism does not distribute funds in as precisely as act
 
 Validators and delegators can use the following commands to claim their rewards:
 
-### validator-outstanding-rewards
+### Querying Outstanding Rewards
 The **validator-outstanding-rewards** command allows users to query all outstanding (un-withdrawn) rewards for a validator and all their delegations.
 
 ```sh
@@ -248,7 +248,7 @@ rewards:
   denom: stake
 ```
 
-### validator-distribution-info
+### Querying Validator Distribution Info
 The **validator-distribution-info** command allows users to query validator commission and self-delegation rewards for validator.
 
 Example:
@@ -266,7 +266,7 @@ self_bond_rewards:
   denom: stake
 ```
 
-### withdraw-rewards
+### Withdraw All Rewards
 The **withdraw-rewards** command allows users to withdraw all rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator and the user proves the **--commission** flag.
 ```sh
 alignedlayerd tx distribution withdraw-rewards [validator-addr] [flags]
@@ -281,7 +281,7 @@ See the Cosmos' [documentation](https://docs.cosmos.network/main/build/modules/d
 about other distribution commands.
 
 ## Bank
-### balances
+### Querying Account Balances
 You can use the **balances** command to query account balances by address.
 ```sh
 alignedlayerd query bank balances [address] [flags]

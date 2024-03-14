@@ -1,6 +1,6 @@
 #!/bin/bash
 
-password="password"
+: "${PASSWORD:=password}"
 token="stake"
 initial_balance=1000000000
 initial_stake=60000000
@@ -37,9 +37,9 @@ done
 
 for (( i=1; i <= "$#"; i++ )); do
     echo "Creating key for ${!i} user..."
-    printf "$password\n$password\n" | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i keys --keyring-backend file --keyring-dir /root/.alignedlayer/keys add val_${!i} > /dev/null 2> ./prod-sim/${!i}/mnemonic.txt
+    printf "$PASSWORD\n$PASSWORD\n" | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i keys --keyring-backend file --keyring-dir /root/.alignedlayer/keys add val_${!i} > /dev/null 2> ./prod-sim/${!i}/mnemonic.txt
 
-    val_address=$(echo $password | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i keys --keyring-backend file --keyring-dir /root/.alignedlayer/keys show val_${!i} --address)
+    val_address=$(echo $PASSWORD | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i keys --keyring-backend file --keyring-dir /root/.alignedlayer/keys show val_${!i} --address)
     echo "val_${!i} address: $val_address"
     echo "val_${!i} mnemonic: $(cat ./prod-sim/${!i}/mnemonic.txt)"
 
@@ -58,7 +58,7 @@ done
 
 for (( i=1; i <= "$#"; i++ )); do
     echo "Giving val_${!i} some stake..."
-    echo $password | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis gentx val_${!i} $initial_stake$token --keyring-backend file --keyring-dir /root/.alignedlayer/keys --account-number 0 --sequence 0 --chain-id alignedlayer --gas 1000000 --gas-prices 0.1$token
+    echo $PASSWORD | docker run --rm -i -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis gentx val_${!i} $initial_stake$token --keyring-backend file --keyring-dir /root/.alignedlayer/keys --account-number 0 --sequence 0 --chain-id alignedlayer --gas 1000000 --gas-prices 0.1$token
 
     if [ $i -gt 1 ]; then
         cp prod-sim/${!i}/config/gentx/* prod-sim/$1/config/gentx/

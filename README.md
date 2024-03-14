@@ -351,10 +351,14 @@ The steps are:
 - Set up addresses between nodes.
 - Build docker compose file.
 
-Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`)
+Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`).
+
 ```sh
 bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 ```
+
+The script retrives the password from the **PASSWORD** env_var. 
+'password' is set as the default.
 
 Start nodes:
 ```sh

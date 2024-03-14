@@ -160,7 +160,7 @@ address: cosmosxxxxxxxxxxxx
 ```
 You'll be encouraged to save a mnemomic in case you need to recover your account. 
 
-9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address. 
+9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address cosmosxxxxxxxxxxxx, which you obtained in step 8. 
 
 10. To create the validator, you need to create a validator.json file. First, obtain your validator pubkey:
 

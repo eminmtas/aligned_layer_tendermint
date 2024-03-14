@@ -42,4 +42,4 @@ curl $PEER_ADDR:8088/send/alignedlayer/$NODE_ADDR
 
 $CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26657 --fees 20000$TOKEN --chain-id $CHAIN_ID
 
-$CHAIN_BINARY start 
+$CHAIN_BINARY start

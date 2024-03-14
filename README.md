@@ -67,9 +67,15 @@ alignedlayerd tx verification verify --from alice --chain-id alignedlayer \
 
 ### Requirements
 
-You need to install the following:
+#### Hardware
 
-* jq
+- CPU: 4 cores
+- Memory: 16GB
+- Disk: 160GB
+
+#### Software
+
+- jq
 
 ### Steps
 To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator, the stake amount, and the token name. For example:

@@ -1,7 +1,9 @@
 #!/bin/bash
 VALIDATOR=$1
 STAKING_AMOUNT=$2
-TOKEN=$3
+
+# HARDCODED FOR NOW
+TOKEN=stake
 
 NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
@@ -12,7 +14,7 @@ git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
 cd aligned_layer_tendermint
 ignite chain build 
 
-$CHAIN_BINARY init $VALIDATOR --chain-id $CHAIN_ID
+$CHAIN_BINARY init $VALIDATOR --chain-id $CHAIN_ID --overwrite
 curl $PEER_ADDR:26657/genesis | jq '.result.genesis' > $NODE_HOME/config/genesis.json
 
 NODEID=$(curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id')
@@ -36,8 +38,8 @@ echo '{"pubkey": '$VALIDATOR_KEY',
 	"commission-max-change-rate": "0.01",
 	"min-self-delegation": "1"}' > validator.json
 
-#ADD ASK FOR TOKENS
+curl $PEER_ADDR:8088/send/alignedlayer/$NODE_ADDR
 
-$CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26656 --fees 20000$TOKEN
+$CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26657 --fees 20000$TOKEN --chain-id $CHAIN_ID
 
-$CHAIN_BINARY start
+$CHAIN_BINARY start 

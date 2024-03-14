@@ -249,11 +249,11 @@ Set a new key:
 alignedlayerd keys add <name>
 ```
 
-Use the faucet in order to have some balance:
-
 > [!TIP]
 > If you don't remember the address, you can do the following:
 > `alignedlayerd keys show <id_string>` or `alignlayerd keys list`
+
+Use the faucet in order to have some balance:
 
 The API at [INSERT_FAUCET_URL](INSERT_FAUCET_URL), provides a way to ask for tokens.
 

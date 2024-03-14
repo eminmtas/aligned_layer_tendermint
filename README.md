@@ -199,7 +199,7 @@ Sets up a network of docker containers each with a validator node and a faucet a
 Build docker images:
 ```sh
 docker build . -t alignedlayerd_i
-docker build . -t alignedlayerd_faucet -f nodeDockerfile
+docker build . -t alignedlayerd_faucet -f node.Dockerfile
 ```
 
 After building the image we need to set up the files for each cosmos validator node.

@@ -6,7 +6,7 @@ NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
 CHAIN_ID=alignedlayer
 PEER_ADDR=blockchain-1
-FAUCET_ADDR=blockchain-1
+FAUCET_ADDR=blockchain-1:8088
 TOKEN=stake
 
 git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
@@ -38,7 +38,7 @@ cat << EOF > $NODE_HOME/config/validator.json
 }
 EOF
 
-curl $FAUCET_ADDR:8088/send/alignedlayer/$NODE_ADDR
+curl $FAUCET_ADDR/send/alignedlayer/$NODE_ADDR
 
 $CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json --from $NODE_ADDR --node tcp://$PEER_ADDR:26657 --fees 20000$TOKEN --chain-id $CHAIN_ID
 

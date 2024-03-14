@@ -231,10 +231,6 @@ docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --n
 
 ## Tutorials
 
-> [!IMPORTANT]  
-> The url, may not work, since the project is in development stage
->  - Token faucet: INSERT_FAUCET_URL
-
 ### How to Create a new Address
 
 The following command shows all the possible operations regarding keys:
@@ -246,24 +242,22 @@ alignedlayerd keys --help
 Set a new key:
 
 ```sh
-alignedlayerd keys add <name>
+alignedlayerd keys add <id_string>
 ```
-
-Use the faucet in order to have some balance:
 
 > [!TIP]
 > If you don't remember the address, you can do the following:
-> `alignedlayerd keys show <id_string>` or `alignlayerd keys list`
+> `alignedlayerd keys show <address>` or `alignedlayerd keys list`
 
-The API at [INSERT_FAUCET_URL](INSERT_FAUCET_URL), provides a way to ask for tokens.
+Use the faucet in order to have some balance.
 
 To check the balance of an address using the binary: 
 
 ```sh
-alignedlayerd query bank balances <id_string>
+alignedlayerd query bank balances <address or id_string>
 ```
 
-### SetUp the Faucet Locally
+### Setup the Faucet Locally
 
 The dir `/faucet` has the files needed to setup the client.
 
@@ -274,7 +268,11 @@ Requirements:
 
 Instructions:
 
-Change the parameters defined by the `config.js` file as needed
+Include the mnemonic at `faucet/.faucet/mnemonic.txt` to reconstruct the address responsible for generating transactions, ensuring that the address belongs to a validator.
+
+Change the parameters defined by the `config.js` file as needed, such as:
+- The node's endpoint with: `rpc_endpoint`
+- How much it is given per request: `tx.amount`
 
 ```
 cd faucet
@@ -282,5 +280,10 @@ npm install
 node faucet.js
 ```
 
-Then the express server is started at `localhost:8080`
+Then the express server is started at `localhost:8088`
 Note: The Tendermint Node(Blockchain) has to be running.
+
+Now the web view can used to request tokens or curl can be used as follows:
+```sh
+curl http://localhost:8088/send/alignedlayer/:address
+```

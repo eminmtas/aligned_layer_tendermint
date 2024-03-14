@@ -1,6 +1,7 @@
 #!/bin/bash
 
-password="password"
+: "${PASSWORD:=password}"
+password=$PASSWORD
 token="stake"
 initial_balance=1000000000
 initial_stake=60000000

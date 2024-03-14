@@ -226,7 +226,6 @@ docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --n
 ```
 
 ## Claiming Staking Rewards
-Cosmos's distribution mechanism does not distribute funds in as precisely as active reward distribution mechanisms. 
 
 Validators and delegators can use the following commands to claim their rewards:
 

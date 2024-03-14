@@ -282,3 +282,8 @@ node faucet.js
 
 Then the express server is started at `localhost:8088`
 Note: The Tendermint Node(Blockchain) has to be running.
+
+Now the web view can used to request tokens or curl can be used as follows:
+```sh
+curl http://localhost:8088/send/alignedlayer/:address
+```

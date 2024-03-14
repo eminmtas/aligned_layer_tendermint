@@ -336,11 +336,12 @@ This is the format used by the CLI.
 
 ## Setting up multiple local nodes using docker
 
-Sets up a network of docker containers each with a validator node.
+Sets up a network of docker containers each with a validator node and a faucet account.
 
-Build docker image:
+Build docker images:
 ```sh
 docker build . -t alignedlayerd_i
+docker build . -t alignedlayerd_faucet -f node.Dockerfile
 ```
 
 After building the image we need to set up the files for each cosmos validator node.
@@ -349,6 +350,7 @@ The steps are:
 - Add users for each node with sufficient funds.
 - Create and distribute inital genesis file.
 - Set up addresses between nodes.
+- Set up faucet files.
 - Build docker compose file.
 
 Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`).
@@ -366,16 +368,76 @@ docker-compose --project-name alignedlayer -f ./prod-sim/docker-compose.yml up -
 ```
 This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
 
+It also creates an image that runs the faucet frontend in `localhost:8088`.
+
 You can verify that it works by running (replacing `<node1_name>` by the name of the first node chosen in the bash script):
 ```sh
 docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --node "tcp://<node1_name>:26657"
 ```
 
-## Claiming Staking Rewards
+## Tutorials
+
+### How to Create a new Address
+
+The following command shows all the possible operations regarding keys:
+
+```sh
+alignedlayerd keys --help
+```
+
+Set a new key:
+
+```sh
+alignedlayerd keys add <id_string>
+```
+
+> [!TIP]
+> If you don't remember the address, you can do the following:
+> `alignedlayerd keys show <address>` or `alignedlayerd keys list`
+
+Use the faucet in order to have some balance.
+
+To check the balance of an address using the binary: 
+
+```sh
+alignedlayerd query bank balances <address or id_string>
+```
+
+### Setup the Faucet Locally
+
+The dir `/faucet` has the files needed to setup the client.
+
+Requirements:
+
+- npm
+- node
+
+Instructions:
+
+Include the mnemonic at `faucet/.faucet/mnemonic.txt` to reconstruct the address responsible for generating transactions, ensuring that the address belongs to a validator.
+
+Change the parameters defined by the `config.js` file as needed, such as:
+- The node's endpoint with: `rpc_endpoint`
+- How much it is given per request: `tx.amount`
+
+```
+cd faucet
+npm install
+node faucet.js
+```
+
+Then the express server is started at `localhost:8088`
+Note: The Tendermint Node(Blockchain) has to be running.
+
+Now the web view can used to request tokens or curl can be used as follows:
+```sh
+curl http://localhost:8088/send/alignedlayer/:address
+```
+### Claiming Staking Rewards
 
 Validators and delegators can use the following commands to claim their rewards:
 
-### Querying Outstanding Rewards
+#### Querying Outstanding Rewards
 The **validator-outstanding-rewards** command allows users to query all outstanding (un-withdrawn) rewards for a validator and all their delegations.
 
 ```sh
@@ -393,7 +455,7 @@ rewards:
   denom: stake
 ```
 
-### Querying Validator Distribution Info
+#### Querying Validator Distribution Info
 The **validator-distribution-info** command allows users to query validator commission and self-delegation rewards for validator.
 
 Example:
@@ -411,7 +473,7 @@ self_bond_rewards:
   denom: stake
 ```
 
-### Withdraw All Rewards
+#### Withdraw All Rewards
 The **withdraw-rewards** command allows users to withdraw all rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator and the user proves the **--commission** flag.
 ```sh
 alignedlayerd tx distribution withdraw-rewards [validator-addr] [flags]
@@ -425,8 +487,8 @@ alignedlayerd tx distribution withdraw-rewards cosmosvaloper1... --from cosmos1.
 See the Cosmos' [documentation](https://docs.cosmos.network/main/build/modules/distribution) to learn
 about other distribution commands.
 
-## Bank
-### Querying Account Balances
+### Bank
+#### Querying Account Balances
 You can use the **balances** command to query account balances by address.
 ```sh
 alignedlayerd query bank balances [address] [flags]

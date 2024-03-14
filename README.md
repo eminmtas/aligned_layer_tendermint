@@ -74,7 +74,7 @@ You need to install the following:
 ### Steps
 To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator and the stake amount. For example:
 ```sh
-bash setup_validator.sh myValidator 1000000 stake
+bash setup_validator.sh myValidator 6000000 stake
 ```
 
 In order to join the blockchain, you need a known public node to first connect to. As an example, we will name it `blockchain-1`.

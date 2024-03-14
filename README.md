@@ -225,7 +225,7 @@ You can verify that it works by running (replacing `<node1_name>` by the name of
 docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --node "tcp://<node1_name>:26657"
 ```
 
-## Distribution
+## Claiming Staking Rewards
 Cosmos's distribution mechanism does not distribute funds in as precisely as active reward distribution mechanisms. 
 
 Validators and delegators can use the following commands to claim their rewards:

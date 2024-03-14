@@ -428,8 +428,6 @@ Now the web view can used to request tokens or curl can be used as follows:
 ```sh
 curl http://localhost:8088/send/alignedlayer/:address
 ```
-
-We are most grateful to Ping.pub's faucet, available at github.com/ping-pub/faucet.
 ### Claiming Staking Rewards
 
 Validators and delegators can use the following commands to claim their rewards:

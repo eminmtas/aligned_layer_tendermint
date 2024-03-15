@@ -34,9 +34,9 @@ VALIDATOR_KEY=$($CHAIN_BINARY tendermint show-validator)
 
 cat << EOF > $NODE_HOME/config/validator.json
 {
-	"pubkey": '$VALIDATOR_KEY',
-	"amount": "'$STAKING_AMOUNT$TOKEN'",
-	"moniker": "'$VALIDATOR'",
+	"pubkey": $VALIDATOR_KEY,
+	"amount": "$STAKING_AMOUNT$TOKEN",
+	"moniker": "$VALIDATOR",
 	"commission-rate": "0.1",
 	"commission-max-rate": "0.2",
 	"commission-max-change-rate": "0.01",

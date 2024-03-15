@@ -8,8 +8,8 @@ Ignite CLI is used to generate boilerplate code for a Cosmos SDK application, ma
 
 ## Requirements
 
-- Go
-- Ignite
+- Go (v1.22)
+- Ignite (v28.2)
 
 ## Example Application Usage with Local Blockchain 
 
@@ -48,7 +48,6 @@ To get the transaction result, run:
 ```sh
 alignedlayerd query tx <txhash>
 ```
-
 If you want to generate a gnark proof by yourself, you must edit the circuit definition and soltion in `./prover_examples/gnark_plonk/gnark_plonk.go` and run the following command:
 
 ```sh
@@ -62,6 +61,169 @@ alignedlayerd tx verification verify --from alice --chain-id alignedlayer \
     $(cat proof.base64) \
     $(cat public_inputs.base64) \
     $(cat verifying_key.base64)
+```
+
+## How to join as validator
+
+### Requirements
+
+#### Hardware
+
+- CPU: 4 cores
+- Memory: 16GB
+- Disk: 160GB
+
+#### Software
+
+- jq
+
+### Run
+
+To set up a validator node, you can either run the provided script `setup_validator.sh`, or manually run the step by step instructions. 
+
+In order to join the blockchain, you need a public node to first connect to. An initial IP must be setted on a PEER_ADDR variable:
+
+```sh
+export PEER_ADDR=<node ip>
+```
+
+A list of our testnet public IPs can be found below.
+
+#### The fast way
+
+The script receives two command line arguments: the name for the validator node and the stake amount.
+
+```sh
+bash setup_validator.sh my-validator-node 6000000
+```
+
+#### Manual step by step
+
+If you want to do a more detailed step by step setup, follow this instructions:
+
+1. Get the code and build the app:
+```sh
+git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
+cd aligned_layer_tendermint
+ignite chain build --output OUTPUT_DIR
+```
+
+To make sure the installation was successful, run the following command:
+```sh
+alignedlayerd version
+```
+
+2. To create the node, run
+```sh
+alignedlayerd init <your-node-name> --chain-id alignedlayer
+```
+If you have already run this command, you can use the `-o` flag to overwrite previously generated files. 
+
+3. You now need to download the blockchain genesis file and replace the one which was automatically generated for you:
+```sh
+curl -s $PEER_ADDR:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
+```
+
+4. Obtain the NODEID by running:
+```sh
+curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id'
+```
+
+To configure persistent peers, seeds and gas prices, run the following commands:
+```sh
+alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656" --skip-validate
+alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
+``` 
+
+5. The two most important ports are 26656 and 26657.
+
+The former is used to establish P2P communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the `$HOME/.alignedlayer/config/config.toml` file contains the right address in the p2p section:
+
+```
+laddr = "tcp://0.0.0.0:26656"
+```
+
+The second port is used for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you might change the IP to.
+
+6. Start your node:
+```sh
+alignedlayerd start
+```
+
+You should keep this shell session attached to this process.
+
+7. Check if your node is already synced:
+```sh
+curl -s localhost:26657/status |  jq '.result.sync_info.catching_up'
+```
+
+It should return `false`. If not, try again after a few minutes later.
+
+8. Make an account:
+```sh
+alignedlayerd keys add <your-node-name>
+```
+
+This commands will return the following information:
+```
+address: cosmosxxxxxxxxxxxx
+name: your-node-name
+pubkey: '{"@type":"xxxxxx","key":"xxxxxx"}'
+type: local
+```
+
+You'll be encouraged to save a mnemomic in case you need to recover your account. 
+
+9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address `cosmosxxxxxxxxxxxx`, which you obtained in the previuos step.
+
+10. To create the validator, you need to create a `validator.json` file.
+
+First, obtain your validator pubkey:
+
+```sh
+alignedlayerd tendermint show-validator
+```
+
+Now create the validator.json file:
+```json
+{
+	"pubkey": {"@type": "...", "key": "..."}, // <-- Replace this with your pubkey
+	"amount": "XXXXXstake", // <-- Replace the XXXXX with the amount you want to stake
+	"moniker": "your-validator-name", // <-- Replace this with your validator name
+	"commission-rate": "0.1",
+	"commission-max-rate": "0.2",
+	"commission-max-change-rate": "0.01",
+	"min-self-delegation": "1"
+}
+```
+
+Now, run:
+```sh
+alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://$PEER_ADDR:26657 --fees 60000stake --chain-id alignedlayer
+```
+
+Your validator address is the one you obtained in step 8.
+
+11. Check whether your validator was accepted:
+```sh
+alignedlayerd query tendermint-validator-set | grep $(alignedlayerd tendermint show-address)
+```
+
+It should return something like:
+
+```
+- address: cosmosvalcons1yead8vgxnmtvmtfrfpleuntslx2jk85drx3ug3
+```
+
+### Testenet public IPs
+
+Our public nodes have the following IPs. Please be aware that they are in development stage, so expect inconsistency.
+
+```
+91.107.239.79
+116.203.81.174
+88.99.174.203
 ```
 
 ## How It Works
@@ -194,11 +356,12 @@ This is the format used by the CLI.
 
 ## Setting up multiple local nodes using docker
 
-Sets up a network of docker containers each with a validator node.
+Sets up a network of docker containers each with a validator node and a faucet account.
 
-Build docker image:
+Build docker images:
 ```sh
 docker build . -t alignedlayerd_i
+docker build . -t alignedlayerd_faucet -f node.Dockerfile
 ```
 
 After building the image we need to set up the files for each cosmos validator node.
@@ -207,12 +370,17 @@ The steps are:
 - Add users for each node with sufficient funds.
 - Create and distribute inital genesis file.
 - Set up addresses between nodes.
+- Set up faucet files.
 - Build docker compose file.
 
-Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`)
+Run script (replacing node names eg. `bash multi_node_setup.sh node0 node1 node2`).
+
 ```sh
 bash multi_node_setup.sh <node1_name> [<node2_name> ...]
 ```
+
+The script retrives the password from the **PASSWORD** env_var. 
+'password' is set as the default.
 
 Start nodes:
 ```sh
@@ -220,7 +388,137 @@ docker-compose --project-name alignedlayer -f ./prod-sim/docker-compose.yml up -
 ```
 This command creates a docker container for each node. Only the first node (`<node1_name>`) has the 26657 port open to receive RPC requests.
 
+It also creates an image that runs the faucet frontend in `localhost:8088`.
+
 You can verify that it works by running (replacing `<node1_name>` by the name of the first node chosen in the bash script):
 ```sh
 docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --node "tcp://<node1_name>:26657"
 ```
+
+## Tutorials
+
+### How to Create a new Address
+
+The following command shows all the possible operations regarding keys:
+
+```sh
+alignedlayerd keys --help
+```
+
+Set a new key:
+
+```sh
+alignedlayerd keys add <id_string>
+```
+
+> [!TIP]
+> If you don't remember the address, you can do the following:
+> `alignedlayerd keys show <address>` or `alignedlayerd keys list`
+
+Use the faucet in order to have some balance.
+
+To check the balance of an address using the binary: 
+
+```sh
+alignedlayerd query bank balances <address or id_string>
+```
+
+### Setup the Faucet Locally
+
+The dir `/faucet` has the files needed to setup the client.
+
+Requirements:
+
+- npm
+- node
+
+Instructions:
+
+Include the mnemonic at `faucet/.faucet/mnemonic.txt` to reconstruct the address responsible for generating transactions, ensuring that the address belongs to a validator.
+
+Change the parameters defined by the `config.js` file as needed, such as:
+- The node's endpoint with: `rpc_endpoint`
+- How much it is given per request: `tx.amount`
+
+```
+cd faucet
+npm install
+node faucet.js
+```
+
+Then the express server is started at `localhost:8088`
+Note: The Tendermint Node(Blockchain) has to be running.
+
+Now the web view can used to request tokens or curl can be used as follows:
+```sh
+curl http://localhost:8088/send/alignedlayer/:address
+```
+### Claiming Staking Rewards
+
+Validators and delegators can use the following commands to claim their rewards:
+
+#### Querying Outstanding Rewards
+The **validator-outstanding-rewards** command allows users to query all outstanding (un-withdrawn) rewards for a validator and all their delegations.
+
+```sh
+alignedlayerd query distribution validator-outstanding-rewards [validator] [flags]
+```
+
+Example:
+```sh
+alignedlayerd query distribution validator-outstanding-rewards cosmosvaloper1...
+```
+Example Output:
+```sh
+rewards:
+- amount: "1000000.000000000000000000"
+  denom: stake
+```
+
+#### Querying Validator Distribution Info
+The **validator-distribution-info** command allows users to query validator commission and self-delegation rewards for validator.
+
+Example:
+```sh
+alignedlayerd query distribution validator-distribution-info cosmosvaloper1...
+```
+Example output:
+```sh
+commission:
+- amount: "100000.000000000000000000"
+  denom: stake
+operator_address: cosmosvaloper1...
+self_bond_rewards:
+- amount: "100000.000000000000000000"
+  denom: stake
+```
+
+#### Withdraw All Rewards
+The **withdraw-rewards** command allows users to withdraw all rewards from a given delegation address, and optionally withdraw validator commission if the delegation address given is a validator operator and the user proves the **--commission** flag.
+```sh
+alignedlayerd tx distribution withdraw-rewards [validator-addr] [flags]
+```
+
+Example:
+```sh
+alignedlayerd tx distribution withdraw-rewards cosmosvaloper1... --from cosmos1... --commission
+```
+
+See the Cosmos' [documentation](https://docs.cosmos.network/main/build/modules/distribution) to learn
+about other distribution commands.
+
+### Bank
+#### Querying Account Balances
+You can use the **balances** command to query account balances by address.
+```sh
+alignedlayerd query bank balances [address] [flags]
+```
+Example:
+```sh
+alignedlayerd query bank balances cosmos1..
+```
+
+# Acknowledgements
+We are most grateful to [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [Ignite CLI](https://github.com/ignite/cli), [CometBFT](https://github.com/cometbft/cometbft) and [Ping.pub](https://github.com/ping-pub/faucet).
+
+

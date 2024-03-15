@@ -121,7 +121,7 @@ alignedlayerd init <your-node-name> --chain-id alignedlayer
 ```
 If you have already run this command, you can use the `-o` flag to overwrite previously generated files. 
 
-You now need to download the blockchain genesis file and replace the one which was automatically generated for you. To do it, run the following command:
+You now need to download the blockchain genesis file and replace the one which was automatically generated for you.
 ```sh
 curl -s $PEER_ADDR:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```

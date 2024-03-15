@@ -11,9 +11,9 @@ fi
 NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
 CHAIN_ID=alignedlayer
-MINIMUM_GAS_PRICES=0.25stake
 
 : ${PEER_ADDR:="91.107.239.79"}
+: ${MINIMUM_GAS_PRICES="0.25stake"}
 
 ignite chain build
 

@@ -11,8 +11,8 @@ STAKING_AMOUNT=$2
 NODE_HOME=$HOME/.alignedlayer
 CHAIN_BINARY=alignedlayerd
 CHAIN_ID=alignedlayer
-PEER_ADDR=blockchain-1
-FAUCET_ADDR=blockchain-1:8088
+${PEER_ADDR:="91.107.239.79"}
+FAUCET_ADDR="$PEER_ADDR:8088"
 TOKEN=stake
 
 git clone https://github.com/yetanotherco/aligned_layer_tendermint.git

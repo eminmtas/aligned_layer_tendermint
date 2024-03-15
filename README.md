@@ -11,7 +11,7 @@ Ignite CLI is used to generate boilerplate code for a Cosmos SDK application, ma
 - Go (v1.22)
 - Ignite (v28.2)
 
-## Example Application Usage with Local Blockchain 
+## Example Local Blockchain 
 
 To run a single node blockchain, run:
 
@@ -63,7 +63,7 @@ alignedlayerd tx verification verify --from alice --chain-id alignedlayer \
     $(cat verifying_key.base64)
 ```
 
-## How to join as validator
+## Joining Our Testnet
 
 ### Requirements
 
@@ -77,34 +77,36 @@ alignedlayerd tx verification verify --from alice --chain-id alignedlayer \
 
 - jq
 
-### Run
+### Node Setup
 
-To set up a validator node, you can either run the provided script `setup_validator.sh`, or manually run the step by step instructions. 
-
-In order to join the blockchain, you need a public node to first connect to. An initial IP must be setted on a PEER_ADDR variable:
+To join our network as a full-node, you need a public node to first connect to. An initial IP address must be set on a PEER_ADDR env variable:
 
 ```sh
-export PEER_ADDR=<node ip>
+export PEER_ADDR=<peer-ip-address>
 ```
 
-A list of our testnet public IPs can be found below.
+A list of our testnet public IP addresses can be found below.
 
 #### The fast way
 
-The script receives two command line arguments: the name for the validator node and the stake amount.
+The fastest way to setup a new node is with our script. It receives the new node's moniker as argument:
 
 ```sh
-bash setup_validator.sh my-validator-node 6000000
+bash setup_node.sh <your-node-name>
+```
+
+Then we can start the node with:
+
+```sh
+alignedlayerd start
 ```
 
 #### Manual step by step
 
 If you want to do a more detailed step by step setup, follow this instructions:
 
-1. Get the code and build the app:
+1. Build the app:
 ```sh
-git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
-cd aligned_layer_tendermint
 ignite chain build --output OUTPUT_DIR
 ```
 
@@ -140,7 +142,7 @@ alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
 
 The former is used to establish P2P communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the `$HOME/.alignedlayer/config/config.toml` file contains the right address in the p2p section:
 
-```
+```toml
 laddr = "tcp://0.0.0.0:26656"
 ```
 
@@ -160,24 +162,58 @@ curl -s localhost:26657/status |  jq '.result.sync_info.catching_up'
 
 It should return `false`. If not, try again after a few minutes later.
 
-8. Make an account:
+## Creating an Account
+
+The following command shows all the possible operations regarding keys:
+
 ```sh
-alignedlayerd keys add <your-node-name>
+alignedlayerd keys --help
+```
+
+Set a new key:
+
+```sh
+alignedlayerd keys add <account-name>
 ```
 
 This commands will return the following information:
 ```
 address: cosmosxxxxxxxxxxxx
-name: your-node-name
+name: your-account-name
 pubkey: '{"@type":"xxxxxx","key":"xxxxxx"}'
 type: local
 ```
 
 You'll be encouraged to save a mnemomic in case you need to recover your account. 
 
-9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address `cosmosxxxxxxxxxxxx`, which you obtained in the previuos step.
+> [!TIP]
+> If you don't remember the address, you can do the following:
+> `alignedlayerd keys show <address>` or `alignedlayerd keys list`
 
-10. To create the validator, you need to create a `validator.json` file.
+
+To check the balance of an address using the binary: 
+
+```sh
+alignedlayerd query bank balances <account-address-or-name>
+```
+
+To ask for tokens, connect to our faucet at http://91.107.239.79:8088/ with your browser. You'll be asked to specify your account address `cosmosxxxxxxxxxxxx`, which you obtained in the previuos step.
+
+## Registering as a Validator
+
+### The fast way
+
+The fastest way to setup a new node is with our script. It receives the amount to stake as an argument:
+
+```sh
+bash setup_validator.sh <account-name-or-address> 1000000stake
+```
+
+This will configure your node and send a transaction for creating a validator.
+
+### Manual step by step
+
+If you want to do a more detailed step by step registering, follow this instructions:
 
 First, obtain your validator pubkey:
 
@@ -190,7 +226,7 @@ Now create the validator.json file:
 {
 	"pubkey": {"@type": "...", "key": "..."}, // <-- Replace this with your pubkey
 	"amount": "XXXXXstake", // <-- Replace the XXXXX with the amount you want to stake
-	"moniker": "your-validator-name", // <-- Replace this with your validator name
+	"moniker": "your-node-name", // <-- Replace this with your validator name
 	"commission-rate": "0.1",
 	"commission-max-rate": "0.2",
 	"commission-max-change-rate": "0.01",
@@ -200,12 +236,10 @@ Now create the validator.json file:
 
 Now, run:
 ```sh
-alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://$PEER_ADDR:26657 --fees 60000stake --chain-id alignedlayer
+alignedlayerd tx staking create-validator validator.json --from <account-name-or-address> --node tcp://$PEER_ADDR:26657 --fees 60000stake --chain-id alignedlayer
 ```
 
-Your validator address is the one you obtained in step 8.
-
-11. Check whether your validator was accepted:
+Check whether your validator was accepted with:
 ```sh
 alignedlayerd query tendermint-validator-set | grep $(alignedlayerd tendermint show-address)
 ```
@@ -396,32 +430,6 @@ docker run --rm -it --network alignedlayer_net-public alignedlayerd_i status --n
 ```
 
 ## Tutorials
-
-### How to Create a new Address
-
-The following command shows all the possible operations regarding keys:
-
-```sh
-alignedlayerd keys --help
-```
-
-Set a new key:
-
-```sh
-alignedlayerd keys add <id_string>
-```
-
-> [!TIP]
-> If you don't remember the address, you can do the following:
-> `alignedlayerd keys show <address>` or `alignedlayerd keys list`
-
-Use the faucet in order to have some balance.
-
-To check the balance of an address using the binary: 
-
-```sh
-alignedlayerd query bank balances <address or id_string>
-```
 
 ### Setup the Faucet Locally
 

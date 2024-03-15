@@ -77,19 +77,35 @@ alignedlayerd tx verification verify --from alice --chain-id alignedlayer \
 
 - jq
 
-### Steps
-To set up a validator node, you can either run the provided script setup_validator.sh, or manually run the step by step instructions (see below). The script receives three command line parameters: the name for the validator and the stake amount. For example:
+### Run
+
+To set up a validator node, you can either run the provided script `setup_validator.sh`, or manually run the step by step instructions. 
+
+In order to join the blockchain, you need a public node to first connect to. An initial IP must be setted on a PEER_ADDR variable:
+
 ```sh
-bash setup_validator.sh myValidator 6000000 stake
+export PEER_ADDR=<node ip>
 ```
 
-In order to join the blockchain, you need a known public node to first connect to. As an example, we will name it `blockchain-1`.
+A list of our testnet public IPs can be found below.
+
+#### The fast way
+
+The script receives two command line arguments: the name for the validator node and the stake amount.
+
+```sh
+bash setup_validator.sh my-validator-node 6000000
+```
+
+#### Manual step by step
+
+If you want to do a more detailed step by step setup, follow this instructions:
 
 1. Get the code and build the app:
 ```sh
 git clone https://github.com/yetanotherco/aligned_layer_tendermint.git
 cd aligned_layer_tendermint
-ignite chain build --output OUTPUT_BIN 
+ignite chain build --output OUTPUT_DIR
 ```
 
 To make sure the installation was successful, run the following command:
@@ -101,17 +117,18 @@ alignedlayerd version
 ```sh
 alignedlayerd init <your-node-name> --chain-id alignedlayer
 ```
-If you have already run this command, you can use the -o flag to overwrite previously generated files. 
+If you have already run this command, you can use the `-o` flag to overwrite previously generated files. 
 
 3. You now need to download the blockchain genesis file and replace the one which was automatically generated for you:
 ```sh
-curl -s blockchain-1:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
+curl -s $PEER_ADDR:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
 4. Obtain your NODEID by running:
 ```sh
-curl -s blockchain-1:26657/status | jq -r '.result.node_info.id'
+curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id'
 ```
+
 To configure persistent peers, seeds and gas prices, run the following commands:
 ```sh
 alignedlayerd config set config p2p.seeds "NODEID@blockchain-1:26656" --skip-validate
@@ -119,56 +136,50 @@ alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656"
 alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
 ``` 
 
-Alternatively, you can update the configuration manually:
-
-Add to $HOME/.alignedlayer/config/config.toml the following address to the [p2p] seeds and persistent_peers:
-```txt
-seeds = "NODEID@blockchain-1:26656"
-persistent_peers = "NODEID@blockchain-1:26656"
-```
-
-Choose and specify in $HOME/.alignedlayer/config/app.toml the minimum gas price the validator is willing to accept for processing a transaction:
-```txt
-minimum-gas-prices = "0.25stake"
-```
-
 5. The two most important ports are 26656 and 26657.
 
-The former is used to establish p2p communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the $HOME/.alignedlayer/config/config.toml file contains the right address in the p2p section:
+The former is used to establish P2P communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the `$HOME/.alignedlayer/config/config.toml` file contains the right address in the p2p section:
 
-```txt
+```
 laddr = "tcp://0.0.0.0:26656"
 ```
 
-The second port is used for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you should change the IP to.
+The second port is used for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you might change the IP to.
 
 6. Start your node:
 ```sh
 alignedlayerd start
 ```
 
+You should keep this shell session attached to this process.
+
 7. Check if your node is already synced:
 ```sh
-curl -s 127.0.0.1:26657/status |  jq '.result.sync_info.catching_up'
+curl -s localhost:26657/status |  jq '.result.sync_info.catching_up'
 ```
-It should return false. 
+
+It should return `false`. If not, try again after a few minutes later.
 
 8. Make an account:
 ```sh
-alignedlayerd keys add <your-validator>
+alignedlayerd keys add <your-node-name>
 ```
+
 This commands will return the following information:
-```txt
-address: cosmosxxxxxxxxxxxx
- name: your-validator
- pubkey: '{"@type":"xxxxxx","key":"xxxxxx"}'
- type: local
 ```
+address: cosmosxxxxxxxxxxxx
+name: your-node-name
+pubkey: '{"@type":"xxxxxx","key":"xxxxxx"}'
+type: local
+```
+
 You'll be encouraged to save a mnemomic in case you need to recover your account. 
 
-9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address cosmosxxxxxxxxxxxx, which you obtained in step 8. 
+9. Ask for tokens. To do so, connect to http://91.107.239.79:8088/. You'll be asked to specify your account address `cosmosxxxxxxxxxxxx`, which you obtained in the previuos step.
 
-10. To create the validator, you need to create a validator.json file. First, obtain your validator pubkey:
+10. To create the validator, you need to create a `validator.json` file.
+
+First, obtain your validator pubkey:
 
 ```sh
 alignedlayerd tendermint show-validator
@@ -177,9 +188,9 @@ alignedlayerd tendermint show-validator
 Now create the validator.json file:
 ```json
 {
-	"pubkey": {"@type": "...", "key": "..."},
-	"amount": "xxxxxxstake",
-	"moniker": "your-validator",
+	"pubkey": {"@type": "...", "key": "..."}, // <-- Replace this with your pubkey
+	"amount": "XXXXXstake", // <-- Replace the XXXXX with the amount you want to stake
+	"moniker": "your-validator-name", // <-- Replace this with your validator name
 	"commission-rate": "0.1",
 	"commission-max-rate": "0.2",
 	"commission-max-change-rate": "0.01",
@@ -189,15 +200,23 @@ Now create the validator.json file:
 
 Now, run:
 ```sh
-alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://blockchain-1:26656 --fees 20000stake
+alignedlayerd tx staking create-validator validator.json --from <your-validator-address> --node tcp://$PEER_ADDR:26657 --fees 60000stake --chain-id alignedlayer
 ```
 
 Your validator address is the one you obtained in step 8.
 
 11. Check whether your validator was accepted:
 ```sh
-alignedlayerd query tendermint-validator-set
+alignedlayerd query tendermint-validator-set | grep $(alignedlayerd tendermint show-address)
 ```
+
+It should return something like:
+
+```
+- address: cosmosvalcons1yead8vgxnmtvmtfrfpleuntslx2jk85drx3ug3
+```
+
+### Testenet public IPs
 
 Our public nodes have the following IPs. Please be aware that they are in development stage, so expect inconsistency.
 

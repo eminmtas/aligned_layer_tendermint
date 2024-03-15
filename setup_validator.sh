@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if [ $# -lt 2 ]; then
+	echo "Usage: $0 <node_name> <staking_amount>"
+	exit 1
+fi
+
 VALIDATOR=$1
 STAKING_AMOUNT=$2
 

@@ -2,8 +2,9 @@
 
 : "${PASSWORD:=password}"
 token="stake"
-initial_balance=1000000000
-initial_stake=60000000
+initial_balance=3000000000
+initial_faucet_balance=1000000000
+initial_stake=1000000000
 
 
 if [ $# -lt 1 ]; then
@@ -44,7 +45,12 @@ for (( i=1; i <= "$#"; i++ )); do
     echo "val_${!i} mnemonic: $(cat ./prod-sim/${!i}/mnemonic.txt)"
 
     echo "Giving val_${!i} some tokens..."
-    docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $initial_balance$token
+    if [ $i -eq 1 ]; then
+        faucet_initial_balance=$((initial_faucet_balance + initial_stake))
+        docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $faucet_initial_balance$token
+    else
+        docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $initial_balance$token
+    fi
 
     if [ $((i+1)) -le "$#" ]; then
         j=$((i+1))

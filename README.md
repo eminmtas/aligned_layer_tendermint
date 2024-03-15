@@ -390,6 +390,12 @@ This is the format used by the CLI.
 
 ## Setting up multiple local nodes using docker
 
+### Additional Requirements
+
+- Sponge (only for setting slashing params)
+
+### How to
+
 Sets up a network of docker containers each with a validator node and a faucet account.
 
 Build docker images:
@@ -534,7 +540,7 @@ alignedlayerd query slashing --help
 #### Querying Slashing Params
 To query genesis parameters for the slashing module:
 ```
-simd query slashing params [flags]
+alignedlayerd query slashing params [flags]
 ```
 #### Querying Signing info
 - To query signing infos of all validators:

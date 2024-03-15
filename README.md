@@ -500,6 +500,6 @@ alignedlayerd query bank balances cosmos1..
 ```
 
 # Acknowledgements
-We are most grateful to [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [Ignite CLI](https://github.com/ignite/cli), [CometBFT](https://github.com/cometbft/cometbft) and [Ping.pub](github.com/ping-pub).
+We are most grateful to [Cosmos SDK](https://github.com/cosmos/cosmos-sdk), [Ignite CLI](https://github.com/ignite/cli), [CometBFT](https://github.com/cometbft/cometbft) and [Ping.pub](https://github.com/ping-pub/faucet).
 
 

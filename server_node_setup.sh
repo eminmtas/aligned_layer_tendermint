@@ -42,5 +42,7 @@ for ((i=0; i<3; i++)); do
     scp -r prod-sim/${nodes[i]} ${servers[i]}:/home/admin/.alignedlayer
 done
 
+scp -p -r prod-sim/faucet/.faucet ${servers[0]}:/home/admin/faucet/.faucet
+
 cd ..
 rm -rf server_setup

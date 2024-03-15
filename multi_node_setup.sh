@@ -2,8 +2,8 @@
 
 : "${PASSWORD:=password}"
 token="stake"
-initial_balance=1000000000
-initial_stake=60000000
+initial_balance=2000000000
+initial_stake=1000000000
 
 
 if [ $# -lt 1 ]; then

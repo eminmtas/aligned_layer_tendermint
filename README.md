@@ -105,7 +105,7 @@ alignedlayerd start
 
 If you want to do a more detailed step by step setup, follow this instructions:
 
-1. Build the app:
+First, build the app:
 ```sh
 ignite chain build --output OUTPUT_DIR
 ```
@@ -115,18 +115,18 @@ To make sure the installation was successful, run the following command:
 alignedlayerd version
 ```
 
-2. To create the node, run
+To initialize the node, run
 ```sh
 alignedlayerd init <your-node-name> --chain-id alignedlayer
 ```
 If you have already run this command, you can use the `-o` flag to overwrite previously generated files. 
 
-3. You now need to download the blockchain genesis file and replace the one which was automatically generated for you:
+You now need to download the blockchain genesis file and replace the one which was automatically generated for you. To do it, run the following command:
 ```sh
 curl -s $PEER_ADDR:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
-4. Obtain the NODEID by running:
+Obtain the peer node id by running:
 ```sh
 curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id'
 ```
@@ -138,7 +138,7 @@ alignedlayerd config set config p2p.persistent_peers "NODEID@blockchain-1:26656"
 alignedlayerd config set app minimum-gas-prices 0.25stake --skip-validate
 ``` 
 
-5. The two most important ports are 26656 and 26657.
+The two most important ports are 26656 and 26657.
 
 The former is used to establish P2P communication with other nodes. This port should be open to world, in order to allow others to communicate with you. Check that the `$HOME/.alignedlayer/config/config.toml` file contains the right address in the p2p section:
 
@@ -148,14 +148,14 @@ laddr = "tcp://0.0.0.0:26656"
 
 The second port is used for the RPC server. If you want to allow remote conections to your node to make queries and transactions, open this port. Note that by default the config sets the address (`rpc.laddr`) to `tcp://127.0.0.1:26657`, you might change the IP to.
 
-6. Start your node:
+Finally, start your node:
 ```sh
 alignedlayerd start
 ```
 
 You should keep this shell session attached to this process.
 
-7. Check if your node is already synced:
+The node will start to sync up with the blockchain. To check if your node is already synced:
 ```sh
 curl -s localhost:26657/status |  jq '.result.sync_info.catching_up'
 ```

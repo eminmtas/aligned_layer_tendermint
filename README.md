@@ -124,7 +124,7 @@ If you have already run this command, you can use the `-o` flag to overwrite pre
 curl -s $PEER_ADDR:26657/genesis | jq '.result.genesis' > ~/.alignedlayer/config/genesis.json
 ```
 
-4. Obtain your NODEID by running:
+4. Obtain the NODEID by running:
 ```sh
 curl -s $PEER_ADDR:26657/status | jq -r '.result.node_info.id'
 ```

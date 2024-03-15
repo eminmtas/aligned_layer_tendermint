@@ -1,10 +1,5 @@
 #!/bin/bash
 
-password="password"
-token="stake"
-initial_balance=1000000000
-initial_stake=60000
-
 nodes=("node0" "node1" "node2")
 nodes_ips=("10.0.0.2" "10.0.0.3" "10.0.0.4")
 servers=("admin@testing-blockchain-1" "admin@testing-blockchain-2" "admin@testing-blockchain-3")

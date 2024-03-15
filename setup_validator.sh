@@ -32,5 +32,5 @@ cat << EOF > $NODE_HOME/config/validator.json
 EOF
 
 $CHAIN_BINARY tx staking create-validator $NODE_HOME/config/validator.json \
-	--from $VALIDATOR --chain-id $CHAIN_ID\
+	--from $VALIDATOR --chain-id $CHAIN_ID \
 	--node tcp://$PEER_ADDR:26657 --fees $FEES

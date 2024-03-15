@@ -47,7 +47,7 @@ for (( i=1; i <= "$#"; i++ )); do
     echo "Giving val_${!i} some tokens..."
     if [ $i -eq 1 ]; then
         faucet_initial_balance=$((initial_faucet_balance + initial_stake))
-        docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $half_initial_balance$token
+        docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $faucet_initial_balance$token
     else
         docker run --rm -it -v $(pwd)/prod-sim/${!i}:/root/.alignedlayer alignedlayerd_i genesis add-genesis-account $val_address $initial_balance$token
     fi
